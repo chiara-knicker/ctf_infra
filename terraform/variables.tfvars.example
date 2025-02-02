@@ -1,0 +1,9 @@
+tenancy_ocid = "your-tenancy-ocid"
+user_ocid    = "your-user-ocid"
+fingerprint  = "your-fingerprint"
+private_key_path = "/path/to/your/private-key.pem"
+
+compartment_id = "your-compartment-id"
+availability_domain = "your-availability-domain"
+ssh_public_key = "/path/to/your/ssh-public-key.pub"
+image_id = "your-image-id"

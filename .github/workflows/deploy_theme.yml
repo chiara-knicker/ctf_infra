@@ -1,1 +1,21 @@
+name: Deploy CTFd Theme
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'ctfd_theme/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Deploy Theme to CTFd
+        run: |
+          scp -i "${{ secrets.SSH_PRIVATE_KEY }}" -r ctfd_theme/uclcybersoc ubuntu@${{ secrets.CTFD_VM_IP }}:/var/www/ctfd/CTFd/themes/
+          ssh ubuntu@${{ secrets.CTFD_VM_IP }} "cd /opt/CTFd && sudo docker-compose restart"
 

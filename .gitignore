@@ -1,1 +1,8 @@
+# Config
 .env
+
+# Terraform
+*.tfvars
+.terraform
+.terraform.lock.hcl
+terraform.tfstate*
