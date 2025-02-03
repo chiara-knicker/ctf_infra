@@ -5,7 +5,6 @@ set -e
 
 # Load environment variables from .env file
 if [ -f .env ]; then
-    # Source the .env file to export variables
     source .env
 else
     echo ".env file not found!"

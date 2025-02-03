@@ -5,7 +5,6 @@ set -e
 
 # Load environment variables from .env file
 if [ -f .env ]; then
-    # Source the .env file to export variables
     source .env
 else
     echo ".env file not found!"
@@ -72,9 +71,6 @@ ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
 
     # Start CTFd in detached mode
     sudo docker-compose up -d
-
-    # Optionally, check the status of the containers
-    sudo docker-compose ps
 EOF
 
 # Deploy hosted challenges using Kubernetes
