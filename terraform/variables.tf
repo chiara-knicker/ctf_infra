@@ -1,13 +1,14 @@
+# provider
 variable "region" {
     type = string
     default = "uk-london-1"
 }
-
 variable "tenancy_ocid" {}
 variable "user_ocid" {}
 variable "private_key_path" {}
 variable "fingerprint" {}
 
+# instance
 variable "compartment_id" {}
 variable "availability_domain" {}
 variable "ssh_public_key" {}
