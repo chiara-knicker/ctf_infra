@@ -5,3 +5,7 @@ provider "oci" {
   fingerprint      = var.fingerprint
   private_key_path = var.private_key_path
 }
+/*
+provider "cloudflare" {
+  api_token = "your-cloudflare-api-token"
+}*/

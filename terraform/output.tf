@@ -5,3 +5,7 @@ output "ctfd_instance_ip" {
 /*output "challenges_instance_ip" {
   value = oci_core_instance.challenges_instance.public_ip
 }*/
+
+/*output "ctfd_dns" {
+  value = cloudflare_record.ctfd.hostname
+}*/

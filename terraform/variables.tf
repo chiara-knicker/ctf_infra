@@ -3,6 +3,7 @@ variable "region" {
     type = string
     default = "uk-london-1"
 }
+
 variable "tenancy_ocid" {}
 variable "user_ocid" {}
 variable "private_key_path" {}
@@ -34,3 +35,12 @@ variable "vm_shape" {
   type = string
   default = "VM.Standard.E2.1.Micro" # always free-eligible
 }
+
+# cloudflare
+/*variable "cloudflare_api_token" {}
+
+variable "cloudflare_zone_id" {
+  description = "Cloudflare Zone ID for the domain"
+  type        = string
+  default = ""
+}*/
