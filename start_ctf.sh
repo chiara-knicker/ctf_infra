@@ -73,6 +73,23 @@ ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
     sudo docker-compose up -d
 EOF
 
+# get SSL certificate
+#echo "Getting SSL certificate..."
+#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
+#    sudo certbot --nginx -d $CTFD_DOMAIN
+#EOF
+
+# nginx configuration
+#echo "Configuring nginx..."
+#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /etc/nginx/sites-available/" # Give ubuntu user permissions to write to themes directory
+#scp -i "$SSH_PRIVATE_KEY" config/nginx.conf $SSH_USER@$CTFD_IP:/etc/nginx/sites-available/ctfd
+#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sed -i 's/your-domain/$CTFD_DOMAIN/g' /etc/nginx/sites-available/ctfd" # Update Nginx config file with actual IP before copying
+#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
+#    sudo ln -sf /etc/nginx/sites-available/ctfd /etc/nginx/sites-enabled/
+#    sudo nginx -t  # Test for syntax errors
+#    sudo systemctl restart nginx
+#EOF
+
 # Deploy hosted challenges using Kubernetes
 # TODO
 
