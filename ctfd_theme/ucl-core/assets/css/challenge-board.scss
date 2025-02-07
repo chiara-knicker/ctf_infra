@@ -1,0 +1,87 @@
+@use "includes/colors.css";
+
+.chal-desc {
+    color: black;
+    padding-left: 30px;
+    padding-right: 30px;
+    font-size: 14px;
+}
+
+.chal-desc img {
+    max-width: 100%;
+    height: auto;
+}
+
+.modal-content {
+    color: black;
+    border-radius: 0px;
+    max-width: 1000px;
+    padding: 1em;
+    margin: 0 auto;
+    background-color: var(--ucl-duck-yellow);
+}
+
+.modal-content > * .table {
+    background-color: transparent;
+    border: none;
+}
+
+.modal-content > * .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, .05);
+}
+
+.challenge-submit {
+    color: var(--ucl-darker-blue);
+    border-color: var(--ucl-darker-blue);
+}
+
+.challenge-submit:hover {
+    color: #fff;
+    background-color: var(--ucl-darker-blue);
+}
+
+.btn-info {
+    background-color: #5B7290 !important;
+}
+
+.badge-info {
+    background-color: #5B7290 !important;
+}
+
+.challenge-button {
+    box-shadow: 2px 2px 2px #6B6B6B;
+    background-color: #fff !important;
+    border: 2px solid #fff !important;
+    color: #000 !important;
+}
+
+.challenge-button:hover {
+    box-shadow: 3px 3px 3px var(--ucl-duck-yellow);
+    //background-color: #fff;
+    //border: 2px solid #fff;
+    //color: #000;
+}
+
+.solved-challenge {
+    background-color: var(--ucl-duck-yellow) !important;
+    //opacity: 1.0;
+    //border: none;
+    //color: #000 !important;
+}
+
+.solved-challenge:hover {
+    box-shadow: 3px 3px 3px #fff;
+    //border: 2px solid #fff;
+}
+
+.corner-button-check {
+    margin-top: -10px;
+    margin-right: 25px;
+    position: absolute;
+    right: 0;
+    color: #000;
+}
+
+.key-submit .btn {
+    height: 51px;
+}
