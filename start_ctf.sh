@@ -27,15 +27,6 @@ if [ -z "$SSH_PRIVATE_KEY" ]; then
     exit 1
 fi
 
-# Set CTF Year
-CHALLENGE_DIR="challenges/$CTF_YEAR"
-
-# Check if the year directory exists
-if [ ! -d "$CHALLENGE_DIR" ]; then
-    echo "Error: Challenge directory $CHALLENGE_DIR does not exist!"
-    exit 1
-fi
-
 echo "Starting CTF setup for year: ${CTF_YEAR}"
 
 # Change to Terraform directory
@@ -68,6 +59,9 @@ scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/uclcybersoc $SSH_USER@$CTFD_IP:/opt/CTFd
 echo "Deploying CTFd with Docker Compose..."
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
     cd /opt/CTFd
+
+    # generate secret key
+    sudo head -c 64 /dev/urandom > .ctfd_secret_key
 
     # Start CTFd in detached mode
     sudo docker-compose up -d
