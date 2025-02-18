@@ -1,3 +1,5 @@
+// ------------- ORACLE -------------
+
 # Create the VCN
 resource "oci_core_virtual_network" "ctf_vcn" {
   compartment_id = var.compartment_id
@@ -95,6 +97,7 @@ resource "oci_core_security_list" "ctf_public_security_list" {
   }
 }
 
+# Create instance
 resource "oci_core_instance" "ctfd_instance" {
     compartment_id      = var.compartment_id
     availability_domain = var.availability_domain
@@ -118,7 +121,7 @@ resource "oci_core_instance" "ctfd_instance" {
     
     metadata = {
         ssh_authorized_keys = file(var.ssh_public_key)
-        user_data           = filebase64("scripts/cloud-init.sh")  # Script for setting up the VM
+        user_data           = filebase64("scripts/ctfd-init.sh")  # Script for setting up the VM
     }
 }
 
@@ -145,6 +148,90 @@ resource "oci_core_instance" "challenges_instance" {
     }
 }
 */
+
+// ------------- GOOGLE -------------
+
+# Create the VPC network
+resource "google_compute_network" "ctf_vpc" {
+  name                    = "ctf-vpc"
+  auto_create_subnetworks = false
+}
+
+# Create the subnet
+resource "google_compute_subnetwork" "ctf_public_subnet" {
+  name          = "ctf-public-subnet"
+  network       = google_compute_network.ctf_vpc.id
+  ip_cidr_range = "10.0.0.0/24"
+  region        = var.region_gcp
+}
+
+# Firewall Rules (Equivalent to Security Lists in OCI)
+resource "google_compute_firewall" "allow_ingress" {
+  name    = "ctf-firewall"
+  network = google_compute_network.ctf_vpc.id
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22", "80", "443", "8000", "12345-12355"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+}
+
+# Create the Compute Instance for CTFd
+resource "google_compute_instance" "ctfd_instance" {
+  name         = "ctfd-instance"
+  machine_type = var.vm_machine_type_gcp
+  zone         = var.zone_gcp
+
+  boot_disk {
+    initialize_params {
+      image = var.image_gcp
+    }
+  }
+
+  network_interface {
+    network    = google_compute_network.ctf_vpc.id
+    subnetwork = google_compute_subnetwork.ctf_public_subnet.id
+    access_config {
+      # Assigns a public IP
+    }
+  }
+
+  metadata = {
+    ssh-keys  = "ubuntu:${file(var.ssh_public_key_gcp)}"
+    startup-script = file("scripts/ctfd-init.sh")
+  }
+}
+
+# Create the Compute Instance for Challenges (Commented out for now)
+# resource "google_compute_instance" "challenges_instance" {
+#   name         = "challenges-instance"
+#   machine_type = var.vm_machine_type_gcp
+#   zone         = var.zone_gcp
+# 
+#   boot_disk {
+#     initialize_params {
+#       image = var.image_gcp
+#     }
+#   }
+# 
+#   network_interface {
+#     network    = google_compute_network.ctf_vpc.id
+#     subnetwork = google_compute_subnetwork.ctf_public_subnet.id
+#     access_config {
+#       # Assigns a public IP
+#     }
+#   }
+# 
+#   metadata = {
+#     ssh-keys  = "ubuntu:${file(var.ssh_public_key_gcp)}"
+#     startup-script = file("scripts/cloud-init-k8s.sh")
+#   }
+# }
+
+// ------------- CLOUDFLARE -------------
+
 /*
 resource "cloudflare_record" "ctfd" {
   zone_id = var.cloudflare_zone_id                      # The Cloudflare zone ID for your domain

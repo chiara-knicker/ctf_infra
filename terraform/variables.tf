@@ -1,4 +1,5 @@
-# provider
+// ------------- ORACLE -------------
+
 variable "region" {
     type = string
     default = "uk-london-1"
@@ -35,6 +36,48 @@ variable "vm_shape" {
   type = string
   default = "VM.Standard.E2.1.Micro" # always free-eligible
 }
+
+// ------------- GOOGLE -------------
+
+variable "project_id" {
+  type        = string
+  description = "GCP project ID"
+}
+
+# Region and Zone
+variable "region_gcp" {
+  type    = string
+  default = "europe-west2"
+}
+
+variable "zone_gcp" {
+  type    = string
+  default = "europe-west2-a"
+}
+
+# Instance Configuration
+variable "ssh_public_key_gcp" {
+  type        = string
+  description = "Path to SSH public key file"
+}
+
+variable "vm_machine_type_gcp" {
+  type    = string
+  default = "e2-micro"
+}
+
+variable "image_gcp" {
+  type    = string
+  default = "ubuntu-os-cloud/ubuntu-2204-lts" # Use Ubuntu 22.04 LTS
+}
+
+variable "credentials_gcp" {
+  type        = string
+  description = "Path to the GCP service account JSON key"
+}
+
+
+// ------------- CLOUDFLARE -------------
 
 # cloudflare
 /*variable "cloudflare_api_token" {}

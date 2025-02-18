@@ -1,4 +1,7 @@
+// ------------- ORACLE -------------
+
 # provider
+#region = ""
 tenancy_ocid = "your-tenancy-ocid"
 user_ocid    = "your-user-ocid"
 fingerprint  = "your-fingerprint"
@@ -8,4 +11,23 @@ private_key_path = "/path/to/your/private-key.pem"
 compartment_id = "your-compartment-id"
 availability_domain = "your-availability-domain"
 ssh_public_key = "/path/to/your/ssh-public-key.pub"
+#ocpus = 
+#memory_in_gbs = 
 image_id = "your-image-id"
+#vm_shape = ""
+
+// ------------- GOOGLE -------------
+
+project_id = "your-project-id"
+#region_gcp = ""
+#zone_gcp = ""
+credentials_gcp = "/path/to/your/service-account-key.json"
+
+ssh_public_key_gcp = "/path/to/your/ssh-public-key.pub"
+#vm_machine_type_gcp = ""
+#image_gcp = ""
+
+// ------------- CLOUDFLARE -------------
+
+cloudflare_api_token = ""
+cloudflare_zone_id = ""
