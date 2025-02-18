@@ -16,6 +16,12 @@ Infrastructure for hosting a CTF.
 
 ## Theme
 - explain compiling scss (and js?)
+```
+docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed ctfd_theme/ucl-core/assets/css/main.scss ctfd_theme/ucl-core/static/css/main.min.css"
+```
+```
+docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed ctfd_theme/ucl-core/assets/css/challenge-board.scss ctfd_theme/ucl-core/static/css/challenge-board.min.css"
+```
 - explain update script
 
 ## Pages
