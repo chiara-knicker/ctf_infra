@@ -32,11 +32,28 @@ cd terraform
 CTFD_IP=$(terraform output -raw ctfd_instance_ip)
 cd ..
 
-echo "Updating CTFd theme..."
+theme=$1
+
+# Check if theme name is provided
+if [ -z "$theme" ]; then
+  echo "Please provide the theme name."
+  exit 1
+fi
+
+# Check if the theme directory exists
+if [ -d "ctfd_theme/$theme" ]; then
+  echo "Directory '$theme' exists inside 'ctfd_theme'."
+else
+  echo "Directory '$theme' does not exist inside 'ctfd_theme'."
+  exit 1
+fi
+
+echo "Updating CTFd theme $theme ..."
 
 # SCP the theme folder to the VM
-echo "copy files"
-scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/uclcybersoc $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+echo "copying files"
+# TODO: change so only modified files are replaced
+scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/$theme $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 
 # Restart CTFd services to apply the new theme
 echo "restart docker"
