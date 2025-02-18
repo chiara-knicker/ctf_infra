@@ -1,0 +1,10 @@
+challenge:
+  name: "Challenge Name"
+  category: "rev"
+  difficulty: "easy"
+  description: "An example challenge"
+  author: "author"
+  flag: "CTF{this_is_the_flag}"
+  distribution:
+    - challenge-name
+  comment: "Some additional notes"

@@ -1,0 +1,17 @@
+FROM ubuntu:20.04
+
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+    netcat
+
+# Set the working directory
+WORKDIR /challenge_files
+
+# Copy the challenge files
+COPY . .
+
+# Expose the port for the challenge
+EXPOSE 12345
+
+# Run the challenge (you can replace this with any challenge start command)
+CMD ["./entrypoint.sh"]
