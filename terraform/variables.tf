@@ -81,13 +81,13 @@ variable "credentials_gcp" {
   description = "Path to the GCP service account JSON key"
 }
 
-variable "vm_machine_type_gcp_cluster" {
+variable "node_pool_machine_type" {
   type = string
   default = "e2-micro"
 }
 
-variable "cluster_node_count" {
-  default = 3
+variable "node_count" {
+  default = 1
 }
 
 // ------------- CLOUDFLARE -------------

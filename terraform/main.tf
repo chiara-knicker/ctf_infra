@@ -215,18 +215,36 @@ resource "google_artifact_registry_repository" "ctf_docker_registry" {
   }
 }
 
-/*resource "google_container_cluster" "ctf_cluster" {
+/*resource "google_service_account" "terraform" {
+  account_id   = "service-account-id"
+  display_name = "Service Account"
+}*/
+
+resource "google_container_cluster" "ctf_cluster" {
   name     = "ctf-challenges-cluster"
   location = var.region_gcp
-  initial_node_count = var.cluster_node_count
+
+  # We can't create a cluster with no node pool defined, but we want to only use
+  # separately managed node pools. So we create the smallest possible default
+  # node pool and immediately delete it.
+  remove_default_node_pool = true
+  initial_node_count       = 1
+}
+
+resource "google_container_node_pool" "ctf_preemptible_nodes" {
+  name       = "ctf-node-pool"
+  location   = var.region_gcp
+  cluster    = google_container_cluster.ctf_cluster.name
+  node_count = var.node_count
 
   node_config {
-    machine_type = var.vm_machine_type_gcp_cluster
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform",
-    ]
+    preemptible  = true
+    machine_type = var.node_pool_machine_type
 
-    disk_type = "pd-standard"  # Use standard persistent disk instead of SSD
-    disk_size_gb = 10          # Reduce disk size to stay within free tier limits
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    #service_account = google_service_account.terraform.email
+    oauth_scopes    = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
   }
-}*/
+}

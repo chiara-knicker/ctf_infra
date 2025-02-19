@@ -28,8 +28,8 @@ ssh_public_key_gcp = "/path/to/your/ssh-public-key.pub"
 #image_gcp = ""
 #ssh_user = ""
 
-#vm_machine_type_gcp_cluster = ""
-#cluster_node_count = 
+#node_pool_machine_type = ""
+#node_count = 
 
 // ------------- CLOUDFLARE -------------
 
