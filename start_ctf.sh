@@ -54,6 +54,8 @@ cd ..
 echo "Adding CTFd theme..."
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/CTFd/themes/" # Give ubuntu user permissions to write to themes directory
 scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/uclcybersoc $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/ucl-core $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/porticoHack $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 
 # SSH into the VM and deploy CTFd using Docker Compose
 echo "Deploying CTFd with Docker Compose..."
@@ -61,7 +63,7 @@ ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
     cd /opt/CTFd
 
     # generate secret key
-    sudo head -c 64 /dev/urandom > .ctfd_secret_key
+    sudo sh -c "head -c 64 /dev/urandom > .ctfd_secret_key"
 
     # Start CTFd in detached mode
     sudo docker-compose up -d
