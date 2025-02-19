@@ -50,10 +50,21 @@ fi
 
 echo "Updating CTFd theme $theme ..."
 
-# SCP the theme folder to the VM
+# copy the theme folder to the VM
 echo "copying files"
-# TODO: change so only modified files are replaced
-scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/$theme $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+#scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/$theme $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+# Only modified files are replaced
+RSYNC_OUTPUT=$(rsync -az --delete --itemize-changes -e "ssh -i $SSH_PRIVATE_KEY" ctfd_theme/$theme/ $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/$theme/)
+
+# If rsync reports no changes (no output) and exit code is 0, exit the script
+if [ -z "$RSYNC_OUTPUT" ]; then
+  echo "No changes detected. Exiting script."
+  exit 0
+fi
+
+# If there were changes, print them and restart CTFd
+echo "Changes detected: "
+echo "$RSYNC_OUTPUT"
 
 # Restart CTFd services to apply the new theme
 echo "restart docker"

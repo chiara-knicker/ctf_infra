@@ -5,7 +5,7 @@
 # Update and install dependencies
 sudo apt-get update -y
 sudo apt-get upgrade -y
-sudo apt-get install -y git docker.io docker-compose python3-pip nginx certbot python3-certbot-nginx
+sudo apt-get install -y git docker.io docker-compose python3-pip nginx certbot python3-certbot-nginx rsync
 
 # Enable Docker to start on boot
 sudo systemctl enable docker
