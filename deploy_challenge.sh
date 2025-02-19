@@ -18,31 +18,54 @@ if [ -z "$CTF_YEAR" ]; then
 fi
 
 # Set CTF Year
-CHALLENGE_DIR="challenges/$CTF_YEAR"
+CHALLENGES_DIR="challenges/$CTF_YEAR"
 
-# Check if the year directory exists
-if [ ! -d "$CHALLENGE_DIR" ]; then
-    echo "Error: Challenge directory $CHALLENGE_DIR does not exist!"
+# Check if the challenges directory exists
+if [ ! -d "$CHALLENGES_DIR" ]; then
+    echo "Error: Challenge directory $CHALLENGES_DIR does not exist!"
     exit 1
 fi
 
-challenge=$1
-
 # Check if challenge name is provided
-if [ -z "$challenge" ]; then
-  echo "Please provide a challenge name."
+if [ -z "$1" ]; then
+  echo "Usage: deploy_challenge [challenge-name]"
   exit 1
 fi
 
-# Search for the directory inside the base directory recursively
-found_dir=$(find "$CHALLENGE_DIR" -type d -name "$challenge" -print -quit)
+CHALLENGE_NAME=$1
+CHALLENGE_DIR=$(find "$CHALLENGES_DIR" -type d -name "$CHALLENGE_NAME" -print -quit)
 
-# Check if the directory was found
-if [ -n "$found_dir" ]; then
-  echo "Directory '$challenge' found: $found_dir"
+# Check if the challenge directory was found
+if [ -n "$CHALLENGE_DIR" ]; then
+  echo "Directory '$CHALLENGE_NAME' found: $CHALLENGE_DIR"
 else
-  echo "Directory '$challenge' not found inside '$CHALLENGE_DIR'."
+  echo "Directory '$CHALLENGE_NAME' not found inside '$CHALLENGES_DIR'."
   exit 1
 fi
 
-# TODO
+# Docker registry and GCP project info
+
+cd terraform
+DOCKER_REGISTRY_URL=$(terraform output -raw docker_registry_url) # "REGION-docker.pkg.dev/YOUR_PROJECT_ID/ctf-docker-registry"
+cd ..
+
+DOCKER_IMAGE="$DOCKER_REGISTRY_URL/$CHALLENGE_NAME:latest"
+
+# Build Docker image for the challenge
+echo "Building Docker image for challenge '$CHALLENGE_NAME'..."
+docker build -t $DOCKER_IMAGE $CHALLENGE_DIR
+
+# Authenticate with Google Artifact Registry
+echo "Authenticating Docker with Google Artifact Registry..."
+#gcloud auth configure-docker $DOCKER_REGISTRY_URL
+cat $JSON_KEY | docker login -u _json_key --password-stdin https://$(echo $DOCKER_REGISTRY_URL | cut -d'/' -f1)
+
+# Push the Docker image to Google Artifact Registry
+echo "Pushing Docker image to Google Artifact Registry..."
+docker push $DOCKER_IMAGE
+
+# Deploy to Kubernetes
+echo "Deploying challenge '$CHALLENGE_NAME' to Kubernetes..."
+#kubectl apply -f "$CHALLENGE_DIR/challenge.yaml"
+
+echo "Challenge '$CHALLENGE_NAME' deployed successfully!"

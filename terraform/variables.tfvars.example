@@ -26,6 +26,10 @@ credentials_gcp = "/path/to/your/service-account-key.json"
 ssh_public_key_gcp = "/path/to/your/ssh-public-key.pub"
 #vm_machine_type_gcp = ""
 #image_gcp = ""
+#ssh_user = ""
+
+#vm_machine_type_gcp_cluster = ""
+#cluster_node_count = 
 
 // ------------- CLOUDFLARE -------------
 

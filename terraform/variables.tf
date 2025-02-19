@@ -71,11 +71,24 @@ variable "image_gcp" {
   default = "ubuntu-os-cloud/ubuntu-2204-lts" # Use Ubuntu 22.04 LTS
 }
 
+variable "ssh_user" {
+  type = string
+  default = "ubuntu"
+}
+
 variable "credentials_gcp" {
   type        = string
   description = "Path to the GCP service account JSON key"
 }
 
+variable "vm_machine_type_gcp_cluster" {
+  type = string
+  default = "e2-micro"
+}
+
+variable "cluster_node_count" {
+  default = 3
+}
 
 // ------------- CLOUDFLARE -------------
 

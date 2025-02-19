@@ -44,9 +44,7 @@ spec:
     category: challenge-category
     challenge: challenge-name
   ports:
-    - port: 12345  # External port (K8s service)
+    - port: 12345  # The port exposed by the container?
       name: port-12345
-      targetPort: 12345  # The port exposed by the container
-      NodePort: 30001 # The port that is exposed on each Node on the cluster
-      #protocol: TCP
-      #type: LoadBalancer  # ClusterIP: Internal access only, change to LoadBalancer if needed
+      targetPort: 12345  # The port exposed by the container?
+      NodePort: 30001 # The port that is exposed on each Node on the cluster?
