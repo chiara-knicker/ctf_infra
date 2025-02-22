@@ -11,7 +11,7 @@
 @import "includes/utils/min-height.scss";*/
 
 html, body {
-    font-family: 'Lato', 'LatoOffline', sans-serif;
+    font-family: 'Consolas', 'monospace', 'Lato', 'LatoOffline', sans-serif;
     color: #fcfeff;
     background-color: var(--pH-grey);
     //background-image: url(../../static/img/bg-stripes.svg);
@@ -19,7 +19,7 @@ html, body {
 }
 
 .container {
-    font-family: 'Lato', 'LatoOffline', sans-serif;
+    font-family: 'Consolas', 'monospace', 'Lato', 'LatoOffline', sans-serif;
     color: #fcfeff;
 }
 
@@ -115,7 +115,7 @@ canvas {
 .navbar-dark .navbar-nav .nav-link {
     //color: rgba(255, 255, 255, 1);
     color: var(--pH-grey);
-    text-shadow: 0.5px 0.5px 0 var(--pH-blue);
+    //text-shadow: 0.5px 0.5px 0 var(--pH-blue);
 }
 
 .navbar-dark .navbar-nav .nav-link:hover {
@@ -125,8 +125,9 @@ canvas {
 
 .mr-auto > * .nav-link {
     text-transform: uppercase;
+    font-family: 'Lato', 'LatoOffline', sans-serif;
     font-weight: 750;
-    //text-shadow: 0.5px 0.5px 0 var(--pH-blue);
+    text-shadow: 0.5px 0.5px var(--text-shadow-blur) var(--pH-blue);
 }
 
 .nav-pills .nav-link.active {

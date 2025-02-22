@@ -45,9 +45,10 @@ fi
 
 # Docker registry and GCP project info
 
-cd terraform
-DOCKER_REGISTRY_URL=$(terraform output -raw docker_registry_url) # "REGION-docker.pkg.dev/YOUR_PROJECT_ID/ctf-docker-registry"
-cd ..
+DOCKER_REGISTRY_URL="$REGION-docker.pkg.dev/$PROJECT_ID/ctf-docker-registry"
+#cd terraform
+#DOCKER_REGISTRY_URL=$(terraform output -raw docker_registry_url) # "REGION-docker.pkg.dev/YOUR_PROJECT_ID/ctf-docker-registry"
+#cd ..
 
 DOCKER_IMAGE="$DOCKER_REGISTRY_URL/$CHALLENGE_NAME:latest"
 
@@ -67,5 +68,6 @@ docker push $DOCKER_IMAGE
 # Deploy to Kubernetes
 echo "Deploying challenge '$CHALLENGE_NAME' to Kubernetes..."
 #kubectl apply -f "$CHALLENGE_DIR/challenge.yaml"
+# TODO
 
 echo "Challenge '$CHALLENGE_NAME' deployed successfully!"

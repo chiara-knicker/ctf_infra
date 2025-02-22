@@ -9,4 +9,7 @@
     --pH-grey: #1c1c1c;
     --pH-blue: #33ccff;
     --pH-pink: #e01fff;
+
+    --text-shadow-blur: 0;
+    --box-shadow-blur: 3px;
 }
