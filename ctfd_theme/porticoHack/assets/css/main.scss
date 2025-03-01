@@ -13,7 +13,7 @@
 html, body {
     font-family: 'Consolas', 'monospace', 'Lato', 'LatoOffline', sans-serif;
     color: #fcfeff;
-    background-color: var(--pH-grey);
+    background-color: var(--pH-bg);
     //background-image: url(../../static/img/bg-stripes.svg);
     //background-repeat: repeat;
 }
@@ -25,13 +25,13 @@ html, body {
 
 @media (min-width: 992px) {
     .navbar > .container {
-        max-width: 1050px;
+        max-width: 1200px;
     }
 }
 
 @media (min-width: 1200px) {
     .container {
-        max-width: 1140px !important;
+        max-width: 1200px !important;
     }
 }
 
@@ -109,18 +109,18 @@ canvas {
 }
 
 .navbar-dark .navbar-brand {
-    color: var(--pH-grey);
+    color: #fff;
 }
 
 .navbar-dark .navbar-nav .nav-link {
     //color: rgba(255, 255, 255, 1);
-    color: var(--pH-grey);
-    //text-shadow: 0.5px 0.5px 0 var(--pH-blue);
+    color: #fff;
+    //text-shadow: 0.5px 0.5px var(--text-shadow-blur) var(--pH-blue);
 }
 
 .navbar-dark .navbar-nav .nav-link:hover {
     //color: rgba(255, 255, 255, .75);
-    color: rgba(50,50,50,.75);
+    color: rgba(43,206,240,.75) !important; // TODO not working for righthand navlinks
 }
 
 .mr-auto > * .nav-link {
@@ -136,16 +136,16 @@ canvas {
 }
 
 .jumbotron {
-    background-color: var(--pH-grey);
+    background-color: var(--pH-bg);
     color: #fff;
     border-radius: 0;
     text-align: center;
 }
 
 .jumbotron > .container {
-    color: var(--pH-purple);
+    color: #fff;
     text-transform: uppercase;
-    text-shadow: 2px 2px 0 var(--pH-blue);
+    text-shadow: 2px 2px var(--text-shadow-blur) var(--pH-pink);
 }
 
 h2 {
@@ -156,7 +156,7 @@ h2 {
 .badge-secondary {
     color: #fff;
     background-color: var(--pH-pink);
-    text-shadow: 2px 2px 0 var(--pH-blue);
+    text-shadow: 2px 2px var(--text-shadow-blur) var(--pH-blue);
 }
 
 /*h2 {
@@ -167,7 +167,7 @@ h2 {
 .badge-secondary {
     color: var(--pH-grey);
     background-color: var(--pH-blue);
-    text-shadow: 1.5px 1.5px 0 var(--pH-pink);
+    text-shadow: 1.5px 1.5px var(--text-shadow-blur) var(--pH-pink);
     box-shadow: 2px 2px 0 #e01fff;
 }*/
 
@@ -247,7 +247,7 @@ h2 {
 }
 
 .btn-primary {
-    color: #fff;
+    color: var(--pH-blue);
     background-color: transparent;
     border-color: var(--pH-blue);
     border-width: 4px;
@@ -326,7 +326,7 @@ select.form-control {
 }
 
 .modal-body {
-    color: #000000;
+    color: #fff;
 }
 
 .card-title {
