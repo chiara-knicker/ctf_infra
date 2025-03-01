@@ -6,3 +6,7 @@
 .terraform
 .terraform.lock.hcl
 terraform.tfstate*
+
+# Authentication
+auth/*
+!auth/.gitkeep

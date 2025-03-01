@@ -14,13 +14,20 @@ Infrastructure for hosting a CTF.
 - some info about VM used for CTFd
 - specs, terraform variables
 
+monitor cloud-init: 
+```
+ssh -i ~/.ssh/oracle_key ubuntu@[ip]
+sudo tail -f /var/log/cloud-init-output.log
+
+```
+
 ## Theme
 - explain compiling scss (and js?)
 ```
-docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed ctfd_theme/ucl-core/assets/css/main.scss ctfd_theme/ucl-core/static/css/main.min.css"
+docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed ctfd_theme/porticoHack/assets/css/main.scss ctfd_theme/porticoHack/static/css/main.min.css"
 ```
 ```
-docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed ctfd_theme/ucl-core/assets/css/challenge-board.scss ctfd_theme/ucl-core/static/css/challenge-board.min.css"
+docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed ctfd_theme/porticoHack/assets/css/challenge-board.scss ctfd_theme/porticoHack/static/css/challenge-board.min.css"
 ```
 - explain update script
 

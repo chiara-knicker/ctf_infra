@@ -16,27 +16,6 @@ variable "zone_gcp" {
   default = "europe-west2-a"
 }
 
-# Instance Configuration
-variable "ssh_public_key_gcp" {
-  type        = string
-  description = "Path to SSH public key file"
-}
-
-variable "vm_machine_type_gcp" {
-  type    = string
-  default = "e2-micro"
-}
-
-variable "image_gcp" {
-  type    = string
-  default = "ubuntu-os-cloud/ubuntu-2204-lts" # Use Ubuntu 22.04 LTS
-}
-
-variable "ssh_user" {
-  type = string
-  default = "ubuntu"
-}
-
 variable "credentials_gcp" {
   type        = string
   description = "Path to the GCP service account JSON key"

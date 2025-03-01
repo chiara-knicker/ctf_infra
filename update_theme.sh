@@ -27,10 +27,13 @@ if [ -z "$SSH_PRIVATE_KEY" ]; then
     exit 1
 fi
 
-# Get the public IP addresses of the VMs from Terraform output
-cd terraform
-CTFD_IP=$(terraform output -raw ctfd_instance_ip)
-cd ..
+PROVIDER=$2
+
+# Check if theme provider name is provided
+if [ -z "$PROVIDER" ]; then
+  echo "Using default provider: oracle."
+  PROVIDER="oracle"
+fi
 
 theme=$1
 

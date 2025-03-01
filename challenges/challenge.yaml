@@ -3,35 +3,33 @@ kind: Deployment
 metadata:
   name: challenge-name
   labels:
-    category: rev # We assign labels to the deployment to link it to a service later, and to help manage deployments
+    category: challenge-category # We assign labels to the deployment to link it to a service later, and to help manage deployments
     challenge: challenge-name
 spec:
   replicas: 1  # Run a single instance of the challenge
   selector:
     matchLabels:
-      category: rev
+      category: challenge-category
       challenge: challenge-name
   template:
     metadata:
       labels:
-        category: rev
+        category: challenge-category
         challenge: challenge-name
     spec:
       containers:
         - name: challenge-name-container
-          image: europe-west2-docker.pkg.dev/ucl-ctf-infra/ctf-docker-registry/challenge-name:latest  # Change this to your actual image name
+          image: challenge-image-name:latest  # Change this to your actual image name
           #resources: # Resource limits for the container. These are important, in case people manage to max out CPU/RAM on your challenge
           #  limits:
-          #    cpu: 100m
-          #    memory: 150Mi
+          #    cpu: 500m
+          #    memory: 600Mi
           #  requests:
-          #    cpu: 10m
-          #    memory: 30Mi
+          #    cpu: 250m
+          #    memory: 256Mi
           ports: # Port exposed by the container, you can add multiple
             - containerPort: 12345  # Match this to the port your challenge listens on
               name: port-12345
-      imagePullSecrets: # if using authentication with json key
-        - name: artifact-registry-secret
 ---
 apiVersion: v1
 kind: Service
@@ -41,12 +39,12 @@ metadata:
     category: challenge-category
     challenge: challenge-name
 spec:
-  type: NodePort # LoadBalancer?
+  type: NodePort
   selector:
-    category: rev
+    category: challenge-category
     challenge: challenge-name
   ports:
-    - port: 12345  # The port exposed by the container
+    - port: 12345  # The port exposed by the container?
       name: port-12345
-      targetPort: 12345  # The port exposed by the container
-      nodePort: 30001 # The port that is exposed on each Node on the cluster?
+      targetPort: 12345  # The port exposed by the container?
+      NodePort: 30001 # The port that is exposed on each Node on the cluster?

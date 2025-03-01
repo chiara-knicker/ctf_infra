@@ -29,32 +29,32 @@ fi
 
 echo "Shutting down CTF infrastructure"
 
+provider=$1
+
+# Check if theme provider name is provided
+if [ -z "$provider" ]; then
+  echo "Using default provider: oracle."
+  provider="oracle"
+fi
+
 # Change to Terraform directory
-cd "terraform"
+cd "terraform/ctfd/$provider"
 
 # Get the public IP addresses of the VMs from Terraform output
 CTFD_IP=$(terraform output -raw ctfd_instance_ip)
-#CHALLENGES_IP=$(terraform output -raw challenges_instance_ip)
 
 echo "CTFd Server IP: $CTFD_IP"
-#echo "Challenges Server IP: $CHALLENGES_IP"
-
-# Return to the original directory
 
 # Gracefully shut down services
 echo "Stopping CTFd services on $CTFD_IP..."
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "cd /opt/CTFd && sudo docker-compose down"
 
-#if [ "$CHALLENGES_IP" != "Not found" ]; then
-#    echo "Stopping all Kubernetes challenge containers on $CHALLENGES_IP..."
-#    ssh user@$CHALLENGES_IP "kubectl delete all --all --namespace=default"
-#fi
-
 # Destroy Terraform-managed resources
 echo "Destroying Terraform infrastructure..."
 terraform destroy -var-file="variables.tfvars" -auto-approve
+rm -rf .terraform terraform.tfstate terraform.tfstate.backup .terraform.lock.hcl
 
 # Return to the original directory
-cd ..
+cd ../../..
 
 echo "CTF infrastructure has been successfully destroyed!"

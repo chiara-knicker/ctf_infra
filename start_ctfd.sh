@@ -11,6 +11,14 @@ else
     exit 1
 fi
 
+PROVIDER=$1
+
+# Check if theme provider name is provided
+if [ -z "$PROVIDER" ]; then
+  echo "Using default provider: oracle."
+  PROVIDER="oracle"
+fi
+
 # Check if required environment variables are set
 if [ -z "$CTF_YEAR" ]; then
     echo "Error: CTF_YEAR is not defined in .env"
@@ -30,7 +38,7 @@ fi
 echo "Starting CTF setup for year: ${CTF_YEAR}"
 
 # Change to Terraform directory
-cd "terraform"
+cd "terraform/ctfd/$PROVIDER"
 
 # Initialize Terraform
 echo "Initializing Terraform..."
@@ -42,13 +50,11 @@ terraform apply -var-file="variables.tfvars" -auto-approve
 
 # Get the public IP addresses of the VMs from Terraform output
 CTFD_IP=$(terraform output -raw ctfd_instance_ip)
-#CHALLENGES_IP=$(terraform output -raw challenges_instance_ip)
 
 echo "CTFd Server IP: $CTFD_IP"
-#echo "Challenges Server IP: $CHALLENGES_IP"
 
 # Return to the original directory
-cd ..
+cd ../../..
 
 # Add CTFd Theme
 echo "Adding CTFd theme..."
@@ -85,8 +91,5 @@ EOF
 #    sudo nginx -t  # Test for syntax errors
 #    sudo systemctl restart nginx
 #EOF
-
-# Deploy hosted challenges using Kubernetes
-# TODO
 
 echo "CTF setup complete for year ${CTF_YEAR}!"
