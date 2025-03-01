@@ -1,10 +1,14 @@
 challenge:
   name: "Challenge Name"
-  category: "rev"
-  difficulty: "easy"
+  category: rev
+  difficulty: easy
   description: "An example challenge"
-  author: "author"
-  flag: "CTF{this_is_the_flag}"
+  author: author
+  flag: CTF{this_is_the_flag}
   distribution:
     - challenge-name
   comment: "Some additional notes"
+deployment:
+  replicas: 1
+  containerPort: 12345
+  nodePort: 30001

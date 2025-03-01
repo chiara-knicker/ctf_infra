@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: CHALLENGE_NAME
+  labels:
+    category: CATEGORY # We assign labels to the deployment to link it to a service later, and to help manage deployments
+    challenge: CHALLENGE_NAME
+spec:
+  replicas: REPLICAS  # Run a single instance of the challenge
+  selector:
+    matchLabels:
+      category: CATEGORY
+      challenge: CHALLENGE_NAME
+  template:
+    metadata:
+      labels:
+        category: CATEGORY
+        challenge: CHALLENGE_NAME
+    spec:
+      containers:
+        - name: CHALLENGE_NAME-container
+          image: REGISTRY_URL/CHALLENGE_NAME:latest  # Change this to your actual image name
+          #resources: # Resource limits for the container. These are important, in case people manage to max out CPU/RAM on your challenge
+          #  limits:
+          #    cpu: 500m
+          #    memory: 600Mi
+          #  requests:
+          #    cpu: 250m
+          #    memory: 256Mi
+          ports: # Port exposed by the container, you can add multiple
+            - containerPort: CONTAINER_PORT  # Match this to the port your challenge listens on
+              name: port-CONTAINER_PORT
+      imagePullSecrets: # if using authentication with json key
+        - name: artifact-registry-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: CHALLENGE_NAME
+  labels:
+    category: CATEGORY
+    challenge: CHALLENGE_NAME
+spec:
+  type: NodePort
+  selector:
+    category: CATEGORY
+    challenge: CHALLENGE_NAME
+  ports:
+    - port: CONTAINER_PORT  # The port exposed by the container
+      name: port-CONTAINER_PORT
+      targetPort: CONTAINER_PORT  # The port exposed by the container
+      nodePort: NODE_PORT # The port that is exposed on each Node on the cluster
