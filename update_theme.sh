@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Exit immediately if any command fails
 set -e
 
 # Load environment variables from .env file
@@ -53,7 +52,7 @@ fi
 
 echo "Updating CTFd theme $theme ..."
 
-# copy the theme folder to the VM
+# Copy the theme folder to the VM
 echo "copying files"
 #scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/$theme $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 # Only modified files are replaced

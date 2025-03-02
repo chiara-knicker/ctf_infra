@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Exit immediately if any command fails
 set -e
 
 # Load environment variables from .env file
@@ -37,24 +36,23 @@ if [ -z "$provider" ]; then
   provider="oracle"
 fi
 
-# Change to Terraform directory
 cd "terraform/ctfd/$provider"
 
-# Get the public IP addresses of the VMs from Terraform output
+# Get the public IP address of the VM from Terraform output
 CTFD_IP=$(terraform output -raw ctfd_instance_ip)
-
 echo "CTFd Server IP: $CTFD_IP"
 
 # Gracefully shut down services
-echo "Stopping CTFd services on $CTFD_IP..."
-ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "cd /opt/CTFd && sudo docker-compose down"
+#echo "Stopping CTFd services on $CTFD_IP..."
+#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "cd /opt/CTFd && sudo docker-compose down"
+
+# Remove the IP from known_hosts
+echo "Removing $CTFD_IP from known_hosts..."
+ssh-keygen -R "$CTFD_IP"
 
 # Destroy Terraform-managed resources
 echo "Destroying Terraform infrastructure..."
 terraform destroy -var-file="variables.tfvars" -auto-approve
 rm -rf .terraform terraform.tfstate terraform.tfstate.backup .terraform.lock.hcl
-
-# Return to the original directory
-cd ../../..
 
 echo "CTF infrastructure has been successfully destroyed!"

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Exit immediately if any command fails
 set -e
 
 # Check if challenge name is provided
@@ -23,7 +22,6 @@ if [ -z $CTF_YEAR ]; then
     exit 1
 fi
 
-# Set CTF Year
 CHALLENGES_DIR="challenges/$CTF_YEAR"
 
 # Check if the challenges directory exists
@@ -50,8 +48,8 @@ if [ ! -e $META_FILE ]; then
     exit 1
 fi
 
+# Check if challenge.yaml exists already
 YAML_FILE="$CHALLENGE_DIR/challenge.yaml"
-# Check if meta.yaml exists
 if [ -e $YAML_FILE ]; then
     echo "Error: challenge.yaml already exists!"
     exit 1
@@ -75,8 +73,6 @@ touch $YAML_FILE
 
 # Fill YAML_FILE with template challenge.yaml where placeholders are replaced with values
 YAML_TEMPLATE="challenges/challenge_template.yaml"
-
-# Create challenge.yaml by replacing placeholders
 sed -e "s|CHALLENGE_NAME|$CHALLENGE_NAME|g" \
     -e "s|CATEGORY|$CATEGORY|g" \
     -e "s|REPLICAS|$REPLICAS|g" \

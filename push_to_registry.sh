@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Exit immediately if any command fails
 set -e
 
 # Check if challenge name is provided
@@ -23,7 +22,6 @@ if [ -z "$CTF_YEAR" ]; then
     exit 1
 fi
 
-# Set CTF Year
 CHALLENGES_DIR="challenges/$CTF_YEAR"
 
 # Check if the challenges directory exists

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Exit immediately if any command fails
 set -e
 
 # Check if challenge name is provided
@@ -23,7 +22,6 @@ if [ -z "$CTF_YEAR" ]; then
     exit 1
 fi
 
-# Set CTF Year
 CHALLENGES_DIR="challenges/$CTF_YEAR"
 
 # Check if the challenges directory exists
@@ -53,10 +51,9 @@ kubectl config set-cluster $cluster_name \
   --server=https://$CLUSTER_IP \
   --certificate-authority=$CLUSTER_CA_CERT 
 
-curl -s https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=$ACCESS_TOKEN | jq
-
 #test="ya29.a0AeXRPp78rB6JNN_62V4MlHQo3usi8GeLojnO2iSJuIlxPPRzcp3Qr418yOJifLTWNnuzMSVjVTO0MYDB-kEp3BMZ6aKzbKrUYljBwGVL0B1sfdGbqElR0SDBhJpjwACu09gLbkL1zrjPHZx-zuORsQwuMHf9R1aa0bN0DeHM5HeKshvi-uz24pNoSW7EKToPgbF8A8ezTaCP-J4h7dBnYMSu4jkFLtct3C2GM-9XDXr-1FUDLXT5BKXI_Wy5WmnPva0gQ09MFXwiwW3S3QvMmd3vCLWC_sgF8ga0BcKyY1a_kP3h2CuORkxor3wwJ4DmbglgFzQI6dGRl0SKukdMsoycIJKLjl7K_h1lS4HAen2weaPD2x7LXk87UnksnBy6Jw5S8-Bgo8HJtNF9OKpqK5aPV36G_QKeElfgaCgYKAYUSARISFQHGX2MiPCCJA5xasg7smQS9hbww3w0427"
 #curl -s https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=$test | jq
+curl -s https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=$ACCESS_TOKEN | jq
 
 kubectl config set-credentials $SA_TERRAFORM \
   --token=$ACCESS_TOKEN
@@ -68,10 +65,7 @@ kubectl config set-context $cluster_name \
 kubectl config use-context $cluster_name
 kubectl get nodes -o wide
 
-# Deploy to Kubernetes
-echo "Deploying challenge '$CHALLENGE_NAME' to Kubernetes..."
-
-# Check if the secret already exists
+# Check if secret for authenticating with registry already exists
 secret_name="artifact-registry-secret"
 kubectl get secret $secret_name &>/dev/null
 
@@ -85,6 +79,9 @@ else
     --docker-username=_json_key \
     --docker-password="$(cat $SA_TERRAFORM_KEY)" 
 fi
+
+# Deploy to Kubernetes
+echo "Deploying challenge '$CHALLENGE_NAME' to Kubernetes..."
 
 kubectl apply -f "$CHALLENGE_DIR/challenge.yaml"
 #kubectl delete -f "$CHALLENGE_DIR/challenge.yaml"
