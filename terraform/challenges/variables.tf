@@ -27,7 +27,19 @@ variable "node_pool_machine_type" {
 }
 
 variable "node_count" {
-  default = 1
+  default = 3
+}
+
+variable "disk_size" {
+  default = 30
+}
+
+variable "disk_type" {
+  default = "pd-standard" # Standard persistent disk (cheaper but slower than SSD "pd-ssd")
+}
+
+variable "image_type" {
+  default = "cos_containerd" # Uses Container-Optimized OS with containerd runtime
 }
 
 // ------------- CLOUDFLARE -------------

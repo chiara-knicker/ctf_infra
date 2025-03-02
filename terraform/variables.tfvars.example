@@ -30,6 +30,9 @@ ssh_public_key_gcp = "/path/to/your/ssh-public-key.pub"
 
 #node_pool_machine_type = ""
 #node_count = 
+#disk_size = 
+#disk_type = 
+#image_type = 
 
 // ------------- CLOUDFLARE -------------
 

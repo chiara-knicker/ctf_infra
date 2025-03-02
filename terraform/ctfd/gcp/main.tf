@@ -21,7 +21,7 @@ resource "google_compute_firewall" "allow_ingress" {
 
   allow {
     protocol = "tcp"
-    ports    = ["22", "80", "443", "8000", "12345-12355"]
+    ports    = ["22", "80", "443", "8000"]
   }
 
   source_ranges = ["0.0.0.0/0"]
