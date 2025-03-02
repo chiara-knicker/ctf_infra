@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Exit immediately if any command fails
 set -e
 
 # Load environment variables from .env file
@@ -37,30 +36,78 @@ fi
 
 echo "Starting CTF setup for year: ${CTF_YEAR}"
 
-# Change to Terraform directory
 cd "terraform/ctfd/$PROVIDER"
 
 # Initialize Terraform
 echo "Initializing Terraform..."
 terraform init
 
-# Apply Terraform configuration (ensuring secrets are provided)
+# Apply Terraform configuration
 echo "Applying Terraform..."
 terraform apply -var-file="variables.tfvars" -auto-approve
 
-# Get the public IP addresses of the VMs from Terraform output
+# Get the public IP address of the VM from Terraform output
 CTFD_IP=$(terraform output -raw ctfd_instance_ip)
 
-echo "CTFd Server IP: $CTFD_IP"
-
-# Return to the original directory
 cd ../../..
 
+# Update .env file
+if grep -q "^CTFD_IP=" ".env"; then
+    sed -i "s|^CTFD_IP=.*|CTFD_IP=$CTFD_IP|" ".env"
+else
+    echo "CTFD_IP=$CTFD_IP" >> ".env"
+fi
+echo "Updated .env file successfully!"
+
+# Try to SSH once VM is ready
+max_retries=5
+wait_time=10 #seconds
+
+set +e
+for ((retry_count=1; retry_count<=max_retries; retry_count++)); do
+    echo -ne "Attempting to SSH... ($retry_count/$max_retries)                  \r"
+
+    # Attempt SSH
+    ssh -i "$SSH_PRIVATE_KEY" -o StrictHostKeyChecking=no -o ConnectTimeout=5 $SSH_USER@$CTFD_IP exit 2>/dev/null
+
+    # Check if SSH connection is successful
+    if [ $? -eq 0 ]; then
+        echo -e "\nSSH access established!"
+        break
+    fi
+
+    # If it's not the last attempt, wait and retry
+    if [ $retry_count -lt $max_retries ]; then
+        echo -ne "SSH is not available yet. Retrying in $wait_time seconds...\r"
+        sleep $wait_time
+    else
+        echo -e "\nError: Unable to SSH into the VM after $max_retries retries."
+        exit 1
+    fi
+done
+set -e
+
+# Wait for cloud-init to finish
+echo -e "\nWaiting for cloud-init to complete..."
+ssh -T -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
+    TOTAL_LINES=1615 
+
+    while ! grep -q 'Cloud-init.*finished' /var/log/cloud-init-output.log; do
+        CURRENT_LINES=\$(wc -l < /var/log/cloud-init-output.log)
+        PERCENTAGE=\$((CURRENT_LINES * 100 / TOTAL_LINES))
+        echo -ne "Cloud-init progress: \$PERCENTAGE% (\$CURRENT_LINES / \$TOTAL_LINES) complete...\r"
+        sleep 5
+    done
+
+    tail -n 1 /var/log/cloud-init-output.log
+EOF
+echo -e "\nCloud-init finished!"
+
 # Add CTFd Theme
-echo "Adding CTFd theme..."
+echo "Adding CTFd themes..."
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/CTFd/themes/" # Give ubuntu user permissions to write to themes directory
-scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/uclcybersoc $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
-scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/ucl-core $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+#scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/uclcybersoc $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+#scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/ucl-core $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/porticoHack $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 
 # SSH into the VM and deploy CTFd using Docker Compose
