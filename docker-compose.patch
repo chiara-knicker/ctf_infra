@@ -1,0 +1,28 @@
+--- docker-compose.yml	2025-03-03 12:18:07.216404032 +0000
++++ docker-compose-new.yml	2025-03-03 14:06:15.179044047 +0000
+@@ -13,7 +13,7 @@
+       - LOG_FOLDER=/var/log/CTFd
+       - ACCESS_LOG=-
+       - ERROR_LOG=-
+-      - REVERSE_PROXY=true
++      #- REVERSE_PROXY=true
+     volumes:
+       - .data/CTFd/logs:/var/log/CTFd
+       - .data/CTFd/uploads:/var/uploads
+@@ -24,16 +24,6 @@
+         default:
+         internal:
+ 
+-  nginx:
+-    image: nginx:stable
+-    restart: always
+-    volumes:
+-      - ./conf/nginx/http.conf:/etc/nginx/nginx.conf
+-    ports:
+-      - 80:80
+-    depends_on:
+-      - ctfd
+-
+   db:
+     image: mariadb:10.11
+     restart: always
