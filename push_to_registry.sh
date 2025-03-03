@@ -16,13 +16,7 @@ else
     exit 1
 fi
 
-# Check if required environment variables are set
-if [ -z "$CTF_YEAR" ]; then
-    echo "Error: CTF_YEAR is not defined in .env"
-    exit 1
-fi
-
-CHALLENGES_DIR="challenges/$CTF_YEAR"
+CHALLENGES_DIR="challenges"
 
 # Check if the challenges directory exists
 if [ ! -d "$CHALLENGES_DIR" ]; then
@@ -41,7 +35,7 @@ else
   exit 1
 fi
 
-# Docker registry and GCP project info
+# Docker registry info
 DOCKER_REGISTRY_URL="$REGION-docker.pkg.dev/$PROJECT_ID/ctf-docker-registry"
 DOCKER_IMAGE="$DOCKER_REGISTRY_URL/$CHALLENGE_NAME:latest"
 
@@ -52,7 +46,7 @@ docker build -t $DOCKER_IMAGE $CHALLENGE_DIR
 # Authenticate with Google Artifact Registry
 echo "Authenticating Docker with Google Artifact Registry..."
 #gcloud auth configure-docker $DOCKER_REGISTRY_URL
-cat $SA_TERRAFORM_KEY | docker login -u _json_key --password-stdin https://$(echo $DOCKER_REGISTRY_URL | cut -d'/' -f1)
+cat $SA_K8S_DEPLOYER_KEY | docker login -u _json_key --password-stdin https://$(echo $DOCKER_REGISTRY_URL | cut -d'/' -f1)
 
 # Push the Docker image to Google Artifact Registry
 echo "Pushing Docker image to Google Artifact Registry..."

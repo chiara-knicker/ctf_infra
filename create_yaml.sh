@@ -16,13 +16,7 @@ else
     exit 1
 fi
 
-# Check if required environment variables are set
-if [ -z $CTF_YEAR ]; then
-    echo "Error: CTF_YEAR is not defined in .env"
-    exit 1
-fi
-
-CHALLENGES_DIR="challenges/$CTF_YEAR"
+CHALLENGES_DIR="challenges"
 
 # Check if the challenges directory exists
 if [ ! -d $CHALLENGES_DIR ]; then
@@ -56,6 +50,7 @@ if [ -e $YAML_FILE ]; then
 fi
 
 # Extract values from meta.yaml
+echo "Getting values from meta.yaml..."
 CATEGORY=$(grep "category:" "$META_FILE" | awk '{print $2}')
 REPLICAS=$(grep "replicas:" "$META_FILE" | awk '{print $2}')
 CONTAINER_PORT=$(grep "containerPort:" "$META_FILE" | awk '{print $2}')
@@ -72,6 +67,7 @@ fi
 touch $YAML_FILE
 
 # Fill YAML_FILE with template challenge.yaml where placeholders are replaced with values
+echo "Creating challenge.yaml..."
 YAML_TEMPLATE="challenges/challenge_template.yaml"
 sed -e "s|CHALLENGE_NAME|$CHALLENGE_NAME|g" \
     -e "s|CATEGORY|$CATEGORY|g" \

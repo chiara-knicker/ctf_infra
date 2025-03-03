@@ -16,13 +16,7 @@ else
     exit 1
 fi
 
-# Check if required environment variables are set
-if [ -z "$CTF_YEAR" ]; then
-    echo "Error: CTF_YEAR is not defined in .env"
-    exit 1
-fi
-
-CHALLENGES_DIR="challenges/$CTF_YEAR"
+CHALLENGES_DIR="challenges"
 
 # Check if the challenges directory exists
 if [ ! -d "$CHALLENGES_DIR" ]; then
@@ -43,7 +37,6 @@ fi
 
 # Authenticate with Google Kubernetes Engine
 echo "Authenticating with GKE..."
-
 # gcloud container clusters get-credentials $CLUSTER_NAME --region=$REGION --project=$PROJECT_ID
 
 cluster_name=ctf-challenges-cluster
@@ -51,24 +44,25 @@ kubectl config set-cluster $cluster_name \
   --server=https://$CLUSTER_IP \
   --certificate-authority=$CLUSTER_CA_CERT 
 
-#test="ya29.a0AeXRPp78rB6JNN_62V4MlHQo3usi8GeLojnO2iSJuIlxPPRzcp3Qr418yOJifLTWNnuzMSVjVTO0MYDB-kEp3BMZ6aKzbKrUYljBwGVL0B1sfdGbqElR0SDBhJpjwACu09gLbkL1zrjPHZx-zuORsQwuMHf9R1aa0bN0DeHM5HeKshvi-uz24pNoSW7EKToPgbF8A8ezTaCP-J4h7dBnYMSu4jkFLtct3C2GM-9XDXr-1FUDLXT5BKXI_Wy5WmnPva0gQ09MFXwiwW3S3QvMmd3vCLWC_sgF8ga0BcKyY1a_kP3h2CuORkxor3wwJ4DmbglgFzQI6dGRl0SKukdMsoycIJKLjl7K_h1lS4HAen2weaPD2x7LXk87UnksnBy6Jw5S8-Bgo8HJtNF9OKpqK5aPV36G_QKeElfgaCgYKAYUSARISFQHGX2MiPCCJA5xasg7smQS9hbww3w0427"
-#curl -s https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=$test | jq
+echo "Access token info:"
 curl -s https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=$ACCESS_TOKEN | jq
 
-kubectl config set-credentials $SA_TERRAFORM \
+kubectl config set-credentials k8s_deployer \
   --token=$ACCESS_TOKEN
 
 kubectl config set-context $cluster_name \
   --cluster=$cluster_name \
-  --user=$SA_TERRAFORM
+  --user=k8s_deployer
 
 kubectl config use-context $cluster_name
+
+echo "Cluster nodes:"
 kubectl get nodes -o wide
 
 # Check if secret for authenticating with registry already exists
 secret_name="artifact-registry-secret"
-kubectl get secret $secret_name &>/dev/null
-
+set +e
+kubectl get secret $secret_name 
 if [ $? -eq 0 ]; then
   echo "Secret '$secret_name' already exists. Skipping creation."
 else
@@ -77,12 +71,12 @@ else
   kubectl create secret docker-registry $secret_name \
     --docker-server=$REGION-docker.pkg.dev \
     --docker-username=_json_key \
-    --docker-password="$(cat $SA_TERRAFORM_KEY)" 
+    --docker-password="$(cat $SA_K8S_DEPLOYER_KEY)" 
 fi
+set -e
 
 # Deploy to Kubernetes
 echo "Deploying challenge '$CHALLENGE_NAME' to Kubernetes..."
-
 kubectl apply -f "$CHALLENGE_DIR/challenge.yaml"
 #kubectl delete -f "$CHALLENGE_DIR/challenge.yaml"
 

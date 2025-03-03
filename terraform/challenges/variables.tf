@@ -27,7 +27,7 @@ variable "node_pool_machine_type" {
 }
 
 variable "node_count" {
-  default = 3
+  default = 1
 }
 
 variable "disk_size" {

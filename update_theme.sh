@@ -11,11 +11,6 @@ else
 fi
 
 # Check if required environment variables are set
-if [ -z "$CTF_YEAR" ]; then
-    echo "Error: CTF_YEAR is not defined in .env"
-    exit 1
-fi
-
 if [ -z "$SSH_USER" ]; then
     echo "Error: SSH_USER is not defined in .env"
     exit 1
@@ -26,37 +21,37 @@ if [ -z "$SSH_PRIVATE_KEY" ]; then
     exit 1
 fi
 
+THEME=$1
+
+# Check if theme name is provided
+if [ -z "$THEME" ]; then
+  echo "Usage: update_theme [theme-name] [provider]"
+  exit 1
+fi
+
 PROVIDER=$2
 
-# Check if theme provider name is provided
+# Check if cloud provider is provided
 if [ -z "$PROVIDER" ]; then
   echo "Using default provider: oracle."
   PROVIDER="oracle"
 fi
 
-theme=$1
-
-# Check if theme name is provided
-if [ -z "$theme" ]; then
-  echo "Please provide the theme name."
-  exit 1
-fi
-
 # Check if the theme directory exists
-if [ -d "ctfd_theme/$theme" ]; then
-  echo "Directory '$theme' exists inside 'ctfd_theme'."
+if [ -d "ctfd_theme/$THEME" ]; then
+  echo "Directory '$THEME' exists inside 'ctfd_theme'."
 else
-  echo "Directory '$theme' does not exist inside 'ctfd_theme'."
+  echo "Directory '$THEME' does not exist inside 'ctfd_theme'."
   exit 1
 fi
 
-echo "Updating CTFd theme $theme ..."
+echo "Updating CTFd theme $THEME..."
 
 # Copy the theme folder to the VM
-echo "copying files"
+echo "Copying files..."
 #scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/$theme $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 # Only modified files are replaced
-RSYNC_OUTPUT=$(rsync -az --delete --itemize-changes -e "ssh -i $SSH_PRIVATE_KEY" ctfd_theme/$theme/ $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/$theme/)
+RSYNC_OUTPUT=$(rsync -az --delete --itemize-changes -e "ssh -i $SSH_PRIVATE_KEY" ctfd_theme/$THEME/ $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/$THEME/)
 
 # If rsync reports no changes (no output) and exit code is 0, exit the script
 if [ -z "$RSYNC_OUTPUT" ]; then
@@ -69,7 +64,7 @@ echo "Changes detected: "
 echo "$RSYNC_OUTPUT"
 
 # Restart CTFd services to apply the new theme
-echo "restart docker"
+echo "Restarting docker..."
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "cd /opt/CTFd && sudo docker-compose restart"
 
 echo "CTFd theme updated and service restarted successfully!"

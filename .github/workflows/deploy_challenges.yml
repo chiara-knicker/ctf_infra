@@ -16,7 +16,7 @@ jobs:
 
       - name: Deploy Challenge
         run: |
-          for dir in $(find challenges/$CTF_YEAR -type d -mindepth 1 -maxdepth 1); do
+          for dir in $(find challenges -type d -mindepth 1 -maxdepth 1); do
             challenge=$(basename "$dir")
             if [ -f "$dir/Dockerfile" ]; then
               ssh ubuntu@<k8s_vm_ip> "kubectl apply -f - <<EOF

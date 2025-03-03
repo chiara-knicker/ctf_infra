@@ -11,11 +11,6 @@ else
 fi
 
 # Check if required environment variables are set
-if [ -z "$CTF_YEAR" ]; then
-    echo "Error: CTF_YEAR is not defined in .env"
-    exit 1
-fi
-
 if [ -z "$SSH_USER" ]; then
     echo "Error: SSH_USER is not defined in .env"
     exit 1
@@ -26,17 +21,17 @@ if [ -z "$SSH_PRIVATE_KEY" ]; then
     exit 1
 fi
 
-echo "Shutting down CTF infrastructure"
+echo "Shutting down CTFd infrastructure..."
 
-provider=$1
+PROVIDER=$1
 
-# Check if theme provider name is provided
-if [ -z "$provider" ]; then
+# Check if cloud provider is provided
+if [ -z "$PROVIDER" ]; then
   echo "Using default provider: oracle."
-  provider="oracle"
+  PROVIDER="oracle"
 fi
 
-cd "terraform/ctfd/$provider"
+cd "terraform/ctfd/$PROVIDER"
 
 # Get the public IP address of the VM from Terraform output
 CTFD_IP=$(terraform output -raw ctfd_instance_ip)
@@ -55,4 +50,4 @@ echo "Destroying Terraform infrastructure..."
 terraform destroy -var-file="variables.tfvars" -auto-approve
 rm -rf .terraform terraform.tfstate terraform.tfstate.backup .terraform.lock.hcl
 
-echo "CTF infrastructure has been successfully destroyed!"
+echo "CTFd infrastructure has been successfully destroyed!"
