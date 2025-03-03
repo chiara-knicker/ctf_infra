@@ -13,21 +13,12 @@ resource "google_container_cluster" "ctf_cluster" {
   network    = google_compute_network.ctf_cluster_network.name
   subnetwork = google_compute_subnetwork.ctf_cluster_subnet.name
 
-  enable_shielded_nodes     = true   # Protect against kernel attacks
-  networking_mode           = "VPC_NATIVE" # Enables VPC-native networking
-  enable_intranode_visibility = true  # Improves network monitoring
+  enable_shielded_nodes     = true          # Protect against kernel attacks
+  networking_mode           = "VPC_NATIVE"  # Enables VPC-native networking
+  enable_intranode_visibility = true        # Improves network monitoring
 
   network_policy {
     enabled = true
-  }
-
-  addons_config {
-    horizontal_pod_autoscaling {
-      disabled = false # default
-    }
-    gce_persistent_disk_csi_driver_config {
-      enabled = true # default
-    }
   }
 }
 
@@ -55,18 +46,12 @@ resource "google_container_node_pool" "ctf_preemptible_nodes" {
     }
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = "k8-admin@ucl-ctf-infra.iam.gserviceaccount.com" # google_service_account.k8-admin.email
+    service_account = google_service_account.k8s_node.email
     oauth_scopes    = [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring"
     ]
-  }
-
-  # Enable autoscaling for the node pool
-  autoscaling {
-    min_node_count = 3
-    max_node_count = 5  # Adjust based on the expected traffic
   }
 }
 
@@ -79,7 +64,7 @@ resource "google_compute_subnetwork" "ctf_cluster_subnet" {
   name          = "ctf-cluster-subnet"
   region        = var.region_gcp
   network       = google_compute_network.ctf_cluster_network.name
-  ip_cidr_range = "10.10.0.0/24"
+  ip_cidr_range = "10.0.0.0/24"
 }
 
 resource "google_compute_firewall" "challenge_firewall" {
@@ -94,19 +79,50 @@ resource "google_compute_firewall" "challenge_firewall" {
   target_tags = ["challenges"]
   priority    = 1000
   direction = "INGRESS"
-  source_ranges = ["0.0.0.0/0"]  # Allows traffic from any IP
+  source_ranges = ["0.0.0.0/0"] 
 }
 
-resource "google_service_account" "k8s_admin" {
-  account_id   = "k8s-admin"
-  display_name = "Kubernetes Admin Service Account"
+# Service account used by nodes
+resource "google_service_account" "k8s_node" {
+  account_id   = "k8s-node"
+  display_name = "Kubernetes Node Service Account"
 }
 
-resource "google_project_iam_binding" "k8s_admin_role" {
+# Service account for deploying challenges to cluster
+resource "google_service_account" "k8s_deployer" {
+  account_id   = "k8s-deployer"
+  display_name = "Kubernetes Deployer Service Account"
+}
+
+resource "google_project_iam_binding" "k8s_deployer_container_developer" {
   project = var.project_id
-  role    = "roles/container.admin"
-
+  role    = "roles/container.developer"
   members = [
-    "serviceAccount:${google_service_account.k8s_admin.email}"
+    "serviceAccount:${google_service_account.k8s_deployer.email}"
   ]
+}
+
+resource "google_project_iam_binding" "k8s_deployer_registry_reader" {
+  project = var.project_id
+  role    = "roles/artifactregistry.writer"
+  members = [
+    "serviceAccount:${google_service_account.k8s_deployer.email}"
+  ]
+}
+
+resource "google_project_iam_binding" "k8s_deployer_viewer" {
+  project = var.project_id
+  role    = "roles/container.clusterViewer"
+  members = [
+    "serviceAccount:${google_service_account.k8s_deployer.email}"
+  ]
+}
+
+resource "google_service_account_key" "k8s_deployer_key" {
+  service_account_id = google_service_account.k8s_deployer.id
+}
+
+data "google_service_account_access_token" "k8s_deployer_access_token" {
+  target_service_account = google_service_account.k8s_deployer.email
+  scopes                = ["cloud-platform"]
 }
