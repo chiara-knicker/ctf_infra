@@ -38,10 +38,10 @@ if [ -z "$PROVIDER" ]; then
 fi
 
 # Check if the theme directory exists
-if [ -d "ctfd_theme/$THEME" ]; then
-  echo "Directory '$THEME' exists inside 'ctfd_theme'."
+if [ -d "CTFd/themes/$THEME" ]; then
+  echo "Directory '$THEME' exists inside 'CTFd/themes'."
 else
-  echo "Directory '$THEME' does not exist inside 'ctfd_theme'."
+  echo "Directory '$THEME' does not exist inside 'CTFd/themes'."
   exit 1
 fi
 
@@ -49,9 +49,9 @@ echo "Updating CTFd theme $THEME..."
 
 # Copy the theme folder to the VM
 echo "Copying files..."
-#scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/$theme $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+#scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/$theme $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 # Only modified files are replaced
-RSYNC_OUTPUT=$(rsync -az --delete --itemize-changes -e "ssh -i $SSH_PRIVATE_KEY" ctfd_theme/$THEME/ $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/$THEME/)
+RSYNC_OUTPUT=$(rsync -az --delete --itemize-changes -e "ssh -i $SSH_PRIVATE_KEY" CTFd/themes/$THEME/ $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/$THEME/)
 
 # If rsync reports no changes (no output) and exit code is 0, exit the script
 if [ -z "$RSYNC_OUTPUT" ]; then

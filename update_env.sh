@@ -19,6 +19,19 @@ ACCESS_TOKEN=$(terraform output -raw k8s_deployer_access_token)
 CLUSTER_IP=$(terraform output -raw ctf_cluster_endpoint)
 CA_CERT=$(terraform output -raw cluster_ca_cert)
 SA_K8_DEPLOYER_KEY=$(terraform output -raw k8s_deployer_key)
+
+# Check if token is expired
+echo "Checking if access token is expired..."
+TOKEN_EXPIRY=$(curl -s https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=$ACCESS_TOKEN | jq -r '.expires_in')
+
+if [[ "$TOKEN_EXPIRY" == "null" || "$TOKEN_EXPIRY" -le 0 ]]; then
+    echo "Access token is expired. Refreshing..."
+    terraform apply -refresh-only -auto-approve > /dev/null
+    ACCESS_TOKEN=$(terraform output -raw k8s_deployer_access_token)
+else
+    echo "Access token is still valid ($TOKEN_EXPIRY seconds remaining)."
+fi
+
 cd ../..
 
 # Store the CA Certificate in a file

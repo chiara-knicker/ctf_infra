@@ -98,9 +98,9 @@ echo -e "\nCloud-init finished!"
 # Add CTFd Theme
 echo "Adding CTFd theme..."
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/CTFd/themes/" # Give ubuntu user permissions to write to themes directory
-#scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/uclcybersoc $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
-#scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/ucl-core $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
-#scp -i "$SSH_PRIVATE_KEY" -r ctfd_theme/porticoHack $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+#scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/uclcybersoc $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+#scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/ucl-core $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+#scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/porticoHack $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 
 # Update docker-compose.yml
 echo "Updating docker-compose.yml file..."
@@ -113,7 +113,7 @@ ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "patch /opt/CTFd/docker-compose.yml
 # and also tells Nginx to route requests to DOMAIN at port 8000.
 echo "Adding nginx-rate-limit-proxy to /etc/nginx/sites-available/$CTFD_SUBDOMAIN.$DOMAIN..."
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /etc/nginx/sites-available/"
-scp -i "$SSH_PRIVATE_KEY" server_config/nginx-rate-limit-proxy.conf $SSH_USER@$CTFD_IP:/etc/nginx/sites-available/$CTFD_SUBDOMAIN.$DOMAIN
+scp -i "$SSH_PRIVATE_KEY" CTFd/server_config/nginx-rate-limit-proxy.conf $SSH_USER@$CTFD_IP:/etc/nginx/sites-available/$CTFD_SUBDOMAIN.$DOMAIN
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sed -i 's/DOMAIN/$CTFD_SUBDOMAIN.$DOMAIN/g' /etc/nginx/sites-available/$CTFD_SUBDOMAIN.$DOMAIN" # Update Nginx config file with actual domain
 
 # Create a symlink to the file you created in the previous step in /etc/nginx/sites-enabled and reload Nginx

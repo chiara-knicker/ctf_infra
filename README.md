@@ -24,10 +24,10 @@ sudo tail -f /var/log/cloud-init-output.log
 ## Theme
 - explain compiling scss (and js?)
 ```
-docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed ctfd_theme/porticoHack/assets/css/main.scss ctfd_theme/porticoHack/static/css/main.min.css"
+docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed CTFd/themes/porticoHack/assets/css/main.scss CTFd/themes/porticoHack/static/css/main.min.css"
 ```
 ```
-docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed ctfd_theme/porticoHack/assets/css/challenge-board.scss ctfd_theme/porticoHack/static/css/challenge-board.min.css"
+docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed CTFd/themes/porticoHack/assets/css/challenge-board.scss CTFd/themes/porticoHack/static/css/challenge-board.min.css"
 ```
 - explain update script
 
@@ -46,4 +46,7 @@ docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && s
 - explain how configuration works
 
 ## Docker Registry
-## Kubernetes & Helm
+## Kubernetes
+
+## Resources
+
