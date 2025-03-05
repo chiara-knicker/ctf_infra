@@ -8,5 +8,5 @@
 terraform.tfstate*
 
 # Authentication
-auth/*
-!auth/.gitkeep
+secrets/*
+!secrets/.gitkeep

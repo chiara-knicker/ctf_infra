@@ -106,7 +106,7 @@ scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/porticoHack $SSH_USER@$CTFD_IP:/opt/CTF
 # TODO make this an if statement checking if files already exist so it doesnt have to be commented manually
 # Generate SSL certificate
 #echo "Generating SSL certificate..."
-#scp -i "$SSH_PRIVATE_KEY" auth/cloudflare.ini $SSH_USER@$CTFD_IP:/etc/letsencrypt/cloudflare.ini
+#scp -i "$SSH_PRIVATE_KEY" secrets/cloudflare.ini $SSH_USER@$CTFD_IP:/etc/letsencrypt/cloudflare.ini
 #ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
 #    sudo mkdir -p /etc/letsencrypt
 #    sudo mkdir -p /var/lib/letsencrypt
@@ -119,14 +119,14 @@ scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/porticoHack $SSH_USER@$CTFD_IP:/opt/CTF
     # Change permission to copy over to local machine
 #    sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/conf/nginx/
 #EOF
-#scp -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/privkey.pem auth/privkey.pem
-#scp -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/fullchain.pem auth/fullchain.pem
+#scp -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/privkey.pem secrets/privkey.pem
+#scp -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/fullchain.pem secrets/fullchain.pem
 
 # Move SSL certificate to VM
 echo "Copying certificate to VM..."
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/conf/nginx/"
-scp -i "$SSH_PRIVATE_KEY" auth/privkey.pem $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/privkey.pem 
-scp -i "$SSH_PRIVATE_KEY" auth/fullchain.pem $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/fullchain.pem
+scp -i "$SSH_PRIVATE_KEY" secrets/privkey.pem $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/privkey.pem 
+scp -i "$SSH_PRIVATE_KEY" secrets/fullchain.pem $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/fullchain.pem
 
 # Update http.conf
 echo "Updating http.conf file..."

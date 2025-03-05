@@ -36,12 +36,12 @@ cd ../..
 
 # Store the CA Certificate in a file
 echo "Storing CA certificate..."
-CA_CERT_PATH="auth/gke-ca.crt"
+CA_CERT_PATH="secrets/gke-ca.crt"
 echo $CA_CERT | base64 --decode > $CA_CERT_PATH
 
 # Store json key in a file
 echo "Storing k8s_deployer json key..."
-KEY_PATH="auth/sa_k8s_deployer_key.json"
+KEY_PATH="secrets/sa_k8s_deployer_key.json"
 echo $SA_K8_DEPLOYER_KEY | base64 --decode > $KEY_PATH
 
 # Function to update or add a key-value pair in .env
