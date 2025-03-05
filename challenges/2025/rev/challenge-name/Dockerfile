@@ -27,4 +27,3 @@ CMD ["/entrypoint.sh"]
 
 # Expose the port for the challenge
 EXPOSE 12345 
-# TODO: define port in meta.yaml?

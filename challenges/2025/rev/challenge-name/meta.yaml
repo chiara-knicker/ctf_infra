@@ -4,7 +4,7 @@ challenge:
   difficulty: easy
   description: "An example challenge"
   author: author
-  flag: CTF{this_is_the_flag}
+  flag: FLAG{You_Got_It}
   distribution:
     - challenge-name
   comment: "Some additional notes"
