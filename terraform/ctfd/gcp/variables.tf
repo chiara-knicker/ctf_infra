@@ -44,11 +44,9 @@ variable "credentials_gcp" {
 
 // ------------- CLOUDFLARE -------------
 
-# cloudflare
-/*variable "cloudflare_api_token" {}
+variable "cloudflare_api_token" {}
 
 variable "cloudflare_zone_id" {
   description = "Cloudflare Zone ID for the domain"
   type        = string
-  default = ""
-}*/
+}

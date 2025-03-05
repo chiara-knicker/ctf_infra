@@ -100,35 +100,42 @@ echo "Adding CTFd theme..."
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/CTFd/themes/" # Give ubuntu user permissions to write to themes directory
 #scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/uclcybersoc $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 #scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/ucl-core $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
-#scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/porticoHack $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/porticoHack $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
+
+# Didn't test this as a script because I ran it on the VM, $variables may not work
+# TODO make this an if statement checking if files already exist so it doesnt have to be commented manually
+# Generate SSL certificate
+#echo "Generating SSL certificate..."
+#scp -i "$SSH_PRIVATE_KEY" auth/cloudflare.ini $SSH_USER@$CTFD_IP:/etc/letsencrypt/cloudflare.ini
+#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
+#    sudo mkdir -p /etc/letsencrypt
+#    sudo mkdir -p /var/lib/letsencrypt
+
+#    sudo certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d $CTFD_SUBDOMAIN.$DOMAIN
+
+#    cp /etc/letsencrypt/live/$CTFD_SUBDOMAIN.$DOMAIN/fullchain.pem ./conf/nginx/fullchain.pem
+#    cp /etc/letsencrypt/live/$CTFD_SUBDOMAIN.$DOMAIN/privkey.pem ./conf/nginx/privkey.pem
+
+    # Change permission to copy over to local machine
+#    sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/conf/nginx/
+#EOF
+#scp -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/privkey.pem auth/privkey.pem
+#scp -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/fullchain.pem auth/fullchain.pem
+
+# Move SSL certificate to VM
+echo "Copying certificate to VM..."
+ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/conf/nginx/"
+scp -i "$SSH_PRIVATE_KEY" auth/privkey.pem $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/privkey.pem 
+scp -i "$SSH_PRIVATE_KEY" auth/fullchain.pem $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/fullchain.pem
+
+# Update http.conf
+echo "Updating http.conf file..."
+scp -i "$SSH_PRIVATE_KEY" CTFd/server_config/http.conf $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/http.conf
 
 # Update docker-compose.yml
 echo "Updating docker-compose.yml file..."
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/"
-scp -i "$SSH_PRIVATE_KEY" docker-compose.patch $SSH_USER@$CTFD_IP:/opt/CTFd/
-ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "patch /opt/CTFd/docker-compose.yml < /opt/CTFd/docker-compose.patch"
-
-# Create a file at /etc/nginx/sites-available/DOMAIN and fill with nginx-rate-limit-proxy.conf
-# This sets up rate-limiting at 10 requests per second, and a max of 10 simultaneous connections per IP address at a time, 
-# and also tells Nginx to route requests to DOMAIN at port 8000.
-echo "Adding nginx-rate-limit-proxy to /etc/nginx/sites-available/$CTFD_SUBDOMAIN.$DOMAIN..."
-ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /etc/nginx/sites-available/"
-scp -i "$SSH_PRIVATE_KEY" CTFd/server_config/nginx-rate-limit-proxy.conf $SSH_USER@$CTFD_IP:/etc/nginx/sites-available/$CTFD_SUBDOMAIN.$DOMAIN
-ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sed -i 's/DOMAIN/$CTFD_SUBDOMAIN.$DOMAIN/g' /etc/nginx/sites-available/$CTFD_SUBDOMAIN.$DOMAIN" # Update Nginx config file with actual domain
-
-# Create a symlink to the file you created in the previous step in /etc/nginx/sites-enabled and reload Nginx
-echo "Creating symlink..."
-ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo ln -sf /etc/nginx/sites-available/$CTFD_SUBDOMAIN.$DOMAIN /etc/nginx/sites-enabled/$CTFD_SUBDOMAIN.$DOMAIN"
-ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo nginx -t" # Test for syntax errors
-ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo systemctl restart nginx"
-
-# Edit http section in /etc/nginx/default to log the real User IP not cloudflare IPs
-#TODO
-
-# get SSL certificate
-#echo "Getting SSL certificate..."
-#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo certbot --nginx -d $SUBDOMAIN.$DOMAIN --non-interactive --agree-tos --email $EMAIL --redirect"
-#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo systemctl restart nginx"
+scp -i "$SSH_PRIVATE_KEY" CTFd/server_config/docker-compose.yml $SSH_USER@$CTFD_IP:/opt/CTFd/docker-compose.yml
 
 # SSH into the VM and deploy CTFd using Docker Compose
 echo "Deploying CTFd with docker compose..."
