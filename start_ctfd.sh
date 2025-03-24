@@ -14,8 +14,8 @@ PROVIDER=$1
 
 # Check if theme provider name is provided
 if [ -z "$PROVIDER" ]; then
-  echo "Using default provider: oracle."
-  PROVIDER="oracle"
+  echo "Usage: ./start_ctfd.sh <provider>"
+  exit 1
 fi
 
 # Check if required environment variables are set
@@ -55,7 +55,7 @@ fi
 echo "Updated .env file successfully!"
 
 # Try to SSH once VM is ready
-max_retries=5
+max_retries=10
 wait_time=15 #seconds
 set +e
 for ((retry_count=1; retry_count<=max_retries; retry_count++)); do
@@ -79,7 +79,7 @@ for ((retry_count=1; retry_count<=max_retries; retry_count++)); do
 done
 set -e
 
-# Wait for cloud-init to finish
+# Wait for cloud-init to finish (TODO replace with checking for /opt/CTFd dir)
 echo -e "\nWaiting for cloud-init to complete..."
 ssh -T -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
     TOTAL_LINES=1678
@@ -95,6 +95,9 @@ ssh -T -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
 EOF
 echo -e "\nCloud-init finished!"
 
+# Wait until /opt/CTFd directory is available
+# TODO
+
 # Add CTFd Theme
 echo "Adding CTFd theme..."
 ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/CTFd/themes/" # Give ubuntu user permissions to write to themes directory
@@ -102,19 +105,19 @@ ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER 
 #scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/ucl-core $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/porticoHack $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 
-# Didn't test this as a script because I ran it on the VM, $variables may not work
 # TODO make this an if statement checking if files already exist so it doesnt have to be commented manually
 # Generate SSL certificate
 #echo "Generating SSL certificate..."
+#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /etc/letsencrypt/"
 #scp -i "$SSH_PRIVATE_KEY" secrets/cloudflare.ini $SSH_USER@$CTFD_IP:/etc/letsencrypt/cloudflare.ini
 #ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
 #    sudo mkdir -p /etc/letsencrypt
 #    sudo mkdir -p /var/lib/letsencrypt
 
-#    sudo certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d $CTFD_SUBDOMAIN.$DOMAIN
+#    sudo certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d $CTFD_SUBDOMAIN.$DOMAIN --email $EMAIL --agree-tos
 
-#    cp /etc/letsencrypt/live/$CTFD_SUBDOMAIN.$DOMAIN/fullchain.pem ./conf/nginx/fullchain.pem
-#    cp /etc/letsencrypt/live/$CTFD_SUBDOMAIN.$DOMAIN/privkey.pem ./conf/nginx/privkey.pem
+#    sudo cp /etc/letsencrypt/live/$CTFD_SUBDOMAIN.$DOMAIN/fullchain.pem /opt/CTFd/conf/nginx/fullchain.pem
+#    sudo cp /etc/letsencrypt/live/$CTFD_SUBDOMAIN.$DOMAIN/privkey.pem /opt/CTFd/conf/nginx/privkey.pem
 
     # Change permission to copy over to local machine
 #    sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/conf/nginx/

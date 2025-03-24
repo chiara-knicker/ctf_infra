@@ -35,17 +35,31 @@ ctf-infra/
 │   │   │   ├── variables.tfvars  # User-configurable variables
 │   │   │   ├── outputs.tf        # Terraform outputs
 │   │   │   ├── cloud-init.yaml   # Initialization script for VM
+|   |   ├── gcp/
+│   │   │   ├── 
+│   │   │   ├── 
+│   │   │   ├── 
+│   ├── challenges/
+│   │   │   ├──  
+│   │   │   ├──  
 │── challenges/                   # Directory for challenges
 │   ├── 2025/                     # Challenges for CTF 2025
-│   │   ├── example-challenge/    # Example challenge directory
-│   │   │   ├── meta.yaml         # Challenge metadata
-│   │   │   ├── challenge.yaml    # Kubernetes deployment file
+│   │   ├── category/             # Example challenge directory
+│   │   │   ├── challenge-name/   
+│   │   │       ├──               # Challenge metadata
+│   │   │       ├──               # Kubernetes deployment file
 │── scripts/                      # Management scripts
 │   ├── start_ctfd.sh             # Deploys CTFd VM and setup
 │   ├── end_ctfd.sh               # Destroys CTF infrastructure
 │   ├── create_yaml.sh            # Generates challenge deployment files
+|   ├──
 │   ├── update_env.sh             # Updates `.env` with Terraform outputs
-│── ctfd_theme/                   # Custom CTFd themes
+├── CTFd/
+│   ├── pages/
+│   ├── server_config/
+│   ├── themes/                   # Custom CTFd themes
+├── secrets/
+│   ├── 
 │── .env                          # Configuration file
 │── README.md                     # This documentation
 
@@ -56,8 +70,6 @@ ctf-infra/
 - Terraform
 - Docker
 - SSH key pair for VM access
-- Project on GCP
-- Service account for running terraform and corresponding API key
 
 # Setup
 
@@ -86,36 +98,28 @@ Create a service account key and store it in ```secrets/your_key_name.json```.
 
 ## Set Up Cloudflare
 
-Create a Cloudflare account and add your domain. For your domain, take a note of your zone ID and create an API token with the 'Zone.DNS' permission. Store this token in ```secrets/cloudflare.ini``` like this:
+Create a Cloudflare account and add your domain. For your domain, take a note of your zone ID and create an API token with the 'Zone.DNS' permission. If you don't have an SSL certificate yet, store this token in ```secrets/cloudflare.ini``` like this:
 
 ```
 dns_cloudflare_api_token = your_token
 ```
 
-## Configure Terraform Variables
+## Configure Variables
 
-You will need to set the following:
+You will need to set the following in the variables.tfvars files and .env:
 
 - GCP project ID
-- path to your service account key
-- path to the public key of the key pair you are using for SSH access
+- project region (default is europe-west2)
+- name of service account used for terraform (the one created earlier)
+- path to terraform service account key
+- path to the public and private key used for SSH access
+- ssh user name (depends on VM image, default is ubuntu)
+- domain to use for CTFd
+- subdomain to use for CTFd
 - cloudflare API token
 - cloudflare zone ID
 
-The other variables have default values that can be adjusted if needed. You can find them in the ```variables.tf``` file.
-
-## Configure Environment Variables
-
-You will need to set some environment variables yourself and others can be updated using the ```update_env.sh``` script after running terraform. The variables you have to set yourself are:
-
-- SSH_USER: ssh user depends on VM image
-- SSH_PRIVATE_KEY: path to ssh private key used to ssh into VM
-- PROJECT_ID: GCP project name
-- REGION: GCP region
-- SA_TERRAFORM: name of service account used for terraform
-- SA_TERRAFORM_KEY: path to key of terraform service account
-- DOMAIN: domain to use for CTFd
-- CTFD_SUBDOMAIN: subdomain to use for CTFd
+Some terraform variables have default values that can be adjusted if needed. You can find them in the ```variables.tf``` file. Some variables in .env are updated using the ```update_env.sh``` script after running terraform.
 
 ## HTTPS
 

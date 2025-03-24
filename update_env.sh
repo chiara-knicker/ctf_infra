@@ -10,9 +10,11 @@ else
     exit 1
 fi
 
+$PROVIDER="gcp" # TODO make this cmd line arg
+
 # Run Terraform output and store values
 echo "Getting values from terraform output..."
-cd terraform/ctfd/oracle
+cd terraform/ctfd/$PROVIDER
 CTFD_IP=$(terraform output -raw ctfd_instance_ip)
 cd ../../challenges
 ACCESS_TOKEN=$(terraform output -raw k8s_deployer_access_token)

@@ -32,6 +32,7 @@ resource "google_compute_instance" "ctfd_instance" {
   name         = "ctfd-instance"
   machine_type = var.vm_machine_type_gcp
   zone         = var.zone_gcp
+  allow_stopping_for_update = true
 
   boot_disk {
     initialize_params {
