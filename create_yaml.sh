@@ -68,7 +68,7 @@ touch $YAML_FILE
 
 # Fill YAML_FILE with template challenge.yaml where placeholders are replaced with values
 echo "Creating challenge.yaml..."
-YAML_TEMPLATE="challenges/challenge_template.yaml"
+YAML_TEMPLATE="challenges/challenge.yaml.template"
 sed -e "s|CHALLENGE_NAME|$CHALLENGE_NAME|g" \
     -e "s|CATEGORY|$CATEGORY|g" \
     -e "s|REPLICAS|$REPLICAS|g" \
