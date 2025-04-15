@@ -17,7 +17,7 @@ This repository contains a Capture The Flag (CTF) infrastructure that automates 
 
 This CTF infrastructure allows users to:
 - Provision cloud infrastructure on Google Cloud using Terraform
-- Automatically install dependencies on the VM via Cloud-Init
+- Automatically install dependencies on the VM 
 - Deploy CTFd with Docker Compose
 - Link CTFd to a domain and set up HTTPS
 - Manage challenges in a structured directory format
@@ -27,41 +27,49 @@ This CTF infrastructure allows users to:
 # File Structure
 
 ```
-ctf-infra/
-│── terraform/                    # Infrastructure as Code (Terraform)
-│   ├── ctfd/                     # Terraform setup for CTFd
-│   │   ├── oracle/               # Oracle-specific Terraform configs
-│   │   │   ├── main.tf           # Main Terraform configuration
-│   │   │   ├── variables.tfvars  # User-configurable variables
-│   │   │   ├── outputs.tf        # Terraform outputs
-│   │   │   ├── cloud-init.yaml   # Initialization script for VM
-|   |   ├── gcp/
-│   │   │   ├── 
-│   │   │   ├── 
-│   │   │   ├── 
-│   ├── challenges/
-│   │   │   ├──  
-│   │   │   ├──  
-│── challenges/                   # Directory for challenges
-│   ├── 2025/                     # Challenges for CTF 2025
-│   │   ├── category/             # Example challenge directory
+ctf-infra/ 
+│── challenges/                   
+│   ├── 2025/                     
+│   │   ├── category/             
 │   │   │   ├── challenge-name/   
-│   │   │       ├──               # Challenge metadata
-│   │   │       ├──               # Kubernetes deployment file
-│── scripts/                      # Management scripts
-│   ├── start_ctfd.sh             # Deploys CTFd VM and setup
-│   ├── end_ctfd.sh               # Destroys CTF infrastructure
-│   ├── create_yaml.sh            # Generates challenge deployment files
-|   ├──
-│   ├── update_env.sh             # Updates `.env` with Terraform outputs
+│   │   │   |    ├── meta.yaml      # Challenge metadata
+│   │   │   |    ├── challenge.yaml # Kubernetes deployment file
+│   │   │   |    ├── ...            # Challenge files
 ├── CTFd/
-│   ├── pages/
-│   ├── server_config/
+│   ├── pages/                    # HTML for custom pages for CTFd
+│   ├── server_config/            # Files for CTFd network configs
+│   │   ├── docker-compose.yml
+│   │   ├── http.conf
 │   ├── themes/                   # Custom CTFd themes
 ├── secrets/
-│   ├── 
-│── .env                          # Configuration file
-│── README.md                     # This documentation
+│   ├── ...                       # Files with sensitive data used for authentication
+│── terraform/                  
+│   ├── ctfd/                     # Terraform setup for CTFd
+│   │   ├── provider/                
+│   │   │   ├── scripts/
+│   │   │   |   ├── ctfd-init.sh # Initialization script for VM
+│   │   │   ├── dns.tf            # DNS configuration
+│   │   │   ├── main.tf           # Main Terraform configuration
+│   │   │   ├── output.tf         # Terraform outputs
+│   │   │   ├── provider.tf       # Provider configuration
+│   │   │   ├── variables.tf      # Declaration of configurable variables
+│   │   │   ├── variables.tfvars  # Values for variables
+│   ├── challenges/               # Terraform setup for Kubernetes cluster  
+│   │   │   ├── cluster.tf        # Cluster configuration
+│   │   │   ├── output.tf    
+│   │   │   ├── provider.tf       
+│   │   │   ├── registry.tf       # Docker registry configuration
+│   │   │   ├── variables.tf      
+│   │   │   ├── variables.tfvars  
+│── .env        
+│── README.md           
+├── start_ctfd.sh                 # Deploys CTFd VM and setup
+├── end_ctfd.sh                   # Destroys CTFd infrastructure
+├── create_yaml.sh                # Generates challenge deployment files
+├── update_theme.sh               # Updates CTFd theme
+├── update_env.sh                 # Updates `.env` with Terraform outputs
+├── push_to_registry.sh           # Creates Docker image and pushes it to registry
+├── deploy_challenge.sh           # Deploys challenge to Kubernetes cluster
 
 ```
 
@@ -139,7 +147,6 @@ monitor cloud-init:
 ```
 ssh -i ~/.ssh/oracle_key ubuntu@[ip]
 sudo tail -f /var/log/cloud-init-output.log
-
 ```
 
 TODO
@@ -153,29 +160,53 @@ Kubernetes, Docker registry
 # CTFd
 
 ## Theme
-- explain compiling scss (and js?)
+
+The theme files are based on the default core theme.
+
+The main files to edit for style changes are ```assets/css/challenge-board.scss``` and ```assets/css/main.scss```. General style settings are in main and challenge board specific ones in challenge-board. These need to be compiled, which can be done with sass using docker:
+
 ```
 docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed CTFd/themes/porticoHack/assets/css/main.scss CTFd/themes/porticoHack/static/css/main.min.css"
 ```
 ```
 docker run --rm -v $(pwd):/mnt -w /mnt node:18 bash -c "npm install -g sass && sass --style=compressed CTFd/themes/porticoHack/assets/css/challenge-board.scss CTFd/themes/porticoHack/static/css/challenge-board.min.css"
 ```
-- explain update script
+
+This will create compiled files and store them in the correct directory.
+
+Images are stored in ```static/img```. These can be used in the HTML source of CTFd pages.
 
 ## Pages
-- explain pages
+
+Pages can be added on the CTFd website. This directory contains the HTML source for the index and rules pages.
 
 ## Server configuration
 
-TODO
+To set up HTTPS, the CTFd default ```docker-compose.yml``` and ```http.conf``` files need to be changed.
+
+```docker-compose.yml```: nginx block is changed to specify the paths to the SSL certificates and the ports to use
+
+```http.conf```: changed to redirect HTTP traffic to HTTPS.
+
+The ```start_ctfd.sh``` script automatically replaces the default files on the VM with the modified ones.
 
 # Challenges
 
-## Challenge Directory Structure
-- explain how files are organized
-- explain required files
-- explain what each file is for
-- explain how configuration works
+Every challenge has its own directory. The name of this directory is the challenge name and can only contain lowercase alphanumerical characters and '-' and '.' because it will be used to name the docker image.
+
+Every challenge should include these files:
+- ```meta.yaml```: useful metadata, both for documentation and for adding the challenge ot CTFd
+- ```README.md```: challenge writeup
+- challenge files, ideally organised in directories
+
+Additionally, these files are needed for hosted challenges:
+- ```challenge.yaml```: Kubernetes deployment file (this file can be created automatically using the ```create_yaml.sh``` script)
+- ```Dockerfile```: to create the Docker image
+
+```meta.yaml``` has to include extra data for hosted challenges:
+- 'replicas': number of instances of the challenge
+- 'containerPort': port exposed by Docker container as specified in Dockerfile
+- 'nodePort': port to expose on each node on the cluster (make sure it is within a valid range and the firewall allows traffic through it)
 
 # Scripts
 
@@ -194,4 +225,7 @@ TODO
 ## update_theme
 
 # Resources
+
+HTTPS for CTFd: <br>
+[https://dev.to/roeeyn/how-to-setup-your-ctfd-platform-with-https-and-ssl-3fda](https://dev.to/roeeyn/how-to-setup-your-ctfd-platform-with-https-and-ssl-3fda)
 
