@@ -22,19 +22,12 @@ if [ -z "$SSH_PRIVATE_KEY" ]; then
 fi
 
 THEME=$1
-
-# Check if theme name is provided
-if [ -z "$THEME" ]; then
-  echo "Usage: update_theme [theme-name] [provider]"
-  exit 1
-fi
-
 PROVIDER=$2
 
-# Check if cloud provider is provided
-if [ -z "$PROVIDER" ]; then
-  echo "Using default provider: oracle."
-  PROVIDER="oracle"
+# Check if theme name is provided
+if [ -z "$THEME" ] || [ -z "$PROVIDER" ]; then
+  echo "Usage: ./update_theme.sh <theme-name> <provider>"
+  exit 1
 fi
 
 # Check if the theme directory exists

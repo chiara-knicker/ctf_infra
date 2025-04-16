@@ -4,7 +4,7 @@ set -e
 
 # Check if challenge name is provided
 if [ -z "$1" ]; then
-  echo "Usage: create_yaml [challenge-name]"
+  echo "Usage: ./create_yaml.sh <challenge-name>"
   exit 1
 fi
 

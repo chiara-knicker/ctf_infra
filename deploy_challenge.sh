@@ -4,7 +4,7 @@ set -e
 
 # Check if challenge name is provided
 if [ -z "$1" ]; then
-  echo "Usage: deploy_challenge [challenge-name]"
+  echo "Usage: ./deploy_challenge.sh <challenge-name>"
   exit 1
 fi
 
