@@ -16,24 +16,6 @@ ssh_public_key = "/path/to/your/ssh-public-key.pub"
 image_id = "your-image-id"
 #vm_shape = ""
 
-// ------------- GOOGLE -------------
-
-project_id = "your-project-id"
-#region_gcp = ""
-#zone_gcp = ""
-credentials_gcp = "/path/to/your/service-account-key.json"
-
-ssh_public_key_gcp = "/path/to/your/ssh-public-key.pub"
-#vm_machine_type_gcp = ""
-#image_gcp = ""
-#ssh_user = ""
-
-#node_pool_machine_type = ""
-#node_count = 
-#disk_size = 
-#disk_type = 
-#image_type = 
-
 // ------------- CLOUDFLARE -------------
 
 cloudflare_api_token = ""

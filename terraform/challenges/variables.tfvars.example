@@ -1,0 +1,12 @@
+// ------------- GOOGLE -------------
+
+project_id = "your-project-id"
+#region_gcp = ""
+#zone_gcp = ""
+credentials_gcp = "/path/to/your/service-account-key.json"
+
+#node_pool_machine_type = ""
+#node_count = 
+#disk_size = 
+#disk_type = 
+#image_type = 

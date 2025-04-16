@@ -1,0 +1,17 @@
+// ------------- GOOGLE -------------
+
+project_id = "your-project-id"
+#region_gcp = ""
+#zone_gcp = ""
+credentials_gcp = "/path/to/your/service-account-key.json"
+
+ssh_public_key_gcp = "/path/to/your/ssh-public-key.pub"
+#vm_machine_type_gcp = ""
+#image_gcp = ""
+#ssh_user = ""
+
+// ------------- CLOUDFLARE -------------
+
+cloudflare_api_token = ""
+cloudflare_zone_id = ""
+subdomain= ""
