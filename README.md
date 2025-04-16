@@ -137,7 +137,7 @@ If you already have an SSL certificate, add ```fullchain.pem``` and ```privkey.p
 
 To start CTFd, run the ```start_ctfd.sh``` script (make sure to uncomment the SSL certificate creation part if you do not have a certificate already).
 
-**Note: This script may take a while to finish.**
+**Note: This script may take a few minutes.**
 
 If any changes are made to the theme, you can run the ```update_theme.sh``` script to update it.
 
@@ -173,6 +173,8 @@ If the challenge does not have a ```challenge.yaml``` file yet, run the ```creat
 Next, run the ```push_to_registry.sh``` script.
 
 Finally, run the ```deploy_challenge.sh``` script.
+
+**Note: The access token used when setting kubectl credentials is only valid for 1h. Once it expires, rerun terraform (this will not recreate any other resources) and rerun the ```update_env.sh``` script.**
 
 You can check deployment with these commands:
 
@@ -247,19 +249,13 @@ Additionally, these files are needed for hosted challenges:
 
 # Scripts
 
-## start_ctfd
-
-## end_ctfd
-
-## update_env
-
-## push_to_registry
-
-## create_yaml
-
-## deploy_challenge
-
-## update_theme
+- ```start_ctfd.sh```: Sets up the entire CTFd infrastructure. After it runs, CTFd will be available at the specified domain.
+- ```end_ctfd.sh```: Destroys the entire CTFd infrastructure.
+- ```update_theme.sh```: Updates the CTFd theme.
+- ```update_env.sh```: Updates the .env file and secrets with cluster data needed for challenge deployment.
+- ```push_to_registry.sh```: Builds Docker image for a challenge and pushes it to the registry.
+- ```create_yaml.sh```: Creates the Kubernetes deployment file for a challenge.
+- ```deploy_challenge.sh```: Deploys a challenge to the Kubernetes cluster.
 
 # Resources
 
