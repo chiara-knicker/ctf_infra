@@ -133,29 +133,66 @@ Some terraform variables have default values that can be adjusted if needed. You
 
 If you already have an SSL certificate, add ```fullchain.pem``` and ```privkey.pem``` to ```secrets/```.
 
+## Start CTFd
+
+To start CTFd, run the ```start_ctfd.sh``` script (make sure to uncomment the SSL certificate creation part if you do not have a certificate already).
+
+**Note: This script may take a while to finish.**
+
+If any changes are made to the theme, you can run the ```update_theme.sh``` script to update it.
+
+To destroy the infrastructure, run the ```end_ctfd.sh``` script.
+
+## Create Kubernetes Cluster
+
+Navigate to the ```terraform/challenges/``` directory and run
+
+```
+terraform init
+terraform apply -var-file="variables.tfvars"
+```
+
+**Note: This may take a while!**
+
+Once the cluster is created, run the ```update_env.sh``` script.
+
+You can get the node details with this command:
+
+```
+kubectl # TODO
+```
+
+TODO: example output, show which IPs are the external ones to connect to
+
+## Deploying Challenges
+
+Each challenge needs to be deployed individually. 
+
+If the challenge does not have a ```challenge.yaml``` file yet, run the ```create_yaml.sh``` script. Make sure that the ```meta.yaml``` file contains all the required data.
+
+Next, run the ```push_to_registry.sh``` script.
+
+Finally, run the ```deploy_challenge.sh``` script.
+
+You can check deployment with these commands:
+
+```
+kubectl # TODO
+```
+
+TODO: example output
+
 # Terraform
 
-CTFd and the Kubernetes cluster for challenge deployment are created separately.
+CTFd and the Kubernetes cluster for challenge deployment are provisioned separately.
 
 ## CTFd
 
-### VM Information
-- some info about VM used for CTFd
-- specs, terraform variables
-
-monitor cloud-init: 
-```
-ssh -i ~/.ssh/oracle_key ubuntu@[ip]
-sudo tail -f /var/log/cloud-init-output.log
-```
-
-TODO
+TODO: VM
 
 ## Challenges
 
-TODO
-
-Kubernetes, Docker registry
+TODO: Kubernetes cluster, Docker registry
 
 # CTFd
 
@@ -197,7 +234,7 @@ Every challenge has its own directory. The name of this directory is the challen
 Every challenge should include these files:
 - ```meta.yaml```: useful metadata, both for documentation and for adding the challenge ot CTFd
 - ```README.md```: challenge writeup
-- challenge files, ideally organised in directories
+- challenge files, organised in directories
 
 Additionally, these files are needed for hosted challenges:
 - ```challenge.yaml```: Kubernetes deployment file (this file can be created automatically using the ```create_yaml.sh``` script)
@@ -226,6 +263,44 @@ Additionally, these files are needed for hosted challenges:
 
 # Resources
 
-HTTPS for CTFd: <br>
-[https://dev.to/roeeyn/how-to-setup-your-ctfd-platform-with-https-and-ssl-3fda](https://dev.to/roeeyn/how-to-setup-your-ctfd-platform-with-https-and-ssl-3fda)
+General: <br>
+- https://ctf101.org/intro/how-to-run-a-ctf/
+- https://github.com/pwning/docs/blob/master/suggestions-for-running-a-ctf.markdown
 
+CTFd: <br>
+- https://docs.ctfd.io/
+- https://github.com/CTFd/themes
+
+HTTPS for CTFd: <br>
+- [https://dev.to/roeeyn/how-to-setup-your-ctfd-platform-with-https-and-ssl-3fda](https://dev.to/roeeyn/how-to-setup-your-ctfd-platform-with-https-and-ssl-3fda)
+- tried, but didnt work: https://medium.com/csictf/self-hosting-a-ctf-platform-ctfd-90f3f1611587
+
+Terraform: <br>
+- https://medium.com/bluetuple-ai/terraform-remote-state-on-gcp-d50e2f69b967
+- https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference
+- https://howtodevez.medium.com/using-terraform-to-deploy-a-docker-image-on-google-kubernetes-engine-fe1ccf5e3671
+
+Kubernetes: <br>
+- https://medium.com/csictf/using-kubernetes-haproxy-to-host-scalable-ctf-challenges-a4720b6a9bbc
+- https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs
+- https://registry.terraform.io/providers/hashicorp/google-beta/6.29.0/docs/guides/using_gke_with_terraform
+
+Inspiration from other CTFs: <br>
+- https://medium.com/csictf/structuring-your-repository-for-ctf-challenges-9351fd47b09a
+- https://github.com/csivitu/ctf-challenges/tree/master
+- https://medium.com/csictf/ctfup-66867f38b8a3
+- https://github.com/hur/ctfd-gcp/tree/master
+- https://github.com/DownUnderCTF/ctfd-kubectf-plugin/tree/develop
+- https://github.com/DownUnderCTF/kube-ctf/tree/develop
+- https://github.com/DownUnderCTF/ctfd-appengine
+
+Challenge deployment: <br>
+- https://github.com/Eadom/ctf_xinetd/tree/master
+- https://github.com/redpwn/jail/tree/main
+- https://medium.com/csictf/automate-deployment-using-ci-cd-eeadd3d47ca7
+- https://google.github.io/kctf/
+
+# Notes
+
+- the number of nodes will be 3 * node_count because there are 3 zones, so it's node_count per zone
+- might have to request quota increase for GCP project to use more CPUs (determine number of nodes and machine type, then check how many CPUs are needed, remember to include CPUs used by CTFd VM)
