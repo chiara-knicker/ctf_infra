@@ -79,27 +79,22 @@ for ((retry_count=1; retry_count<=max_retries; retry_count++)); do
 done
 set -e
 
-# Wait for ctfd-init to finish (TODO: check TOTAL_LINES is correct)
+# Wait for VM setup to finish
 echo -e "\nWaiting for VM setup to complete..."
 ssh -T -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
-    TOTAL_LINES=1678
-
     while ! grep -q 'Cloud-init.*finished' /var/log/cloud-init-output.log; do
-        CURRENT_LINES=\$(wc -l < /var/log/cloud-init-output.log)
-        PERCENTAGE=\$((CURRENT_LINES * 100 / TOTAL_LINES))
-        echo -ne "Cloud-init progress: \$PERCENTAGE% (\$CURRENT_LINES / \$TOTAL_LINES) complete...\r"
+        echo -ne "Waiting for cloud-init to finish...\r"
         sleep 5
     done
 
     tail -n 1 /var/log/cloud-init-output.log
     
-    # UNTESTED, comment out if script doesnt work
-    echo "Waiting for /opt/CTFd to be ready..."
     while [ ! -d /opt/CTFd ] || [ -z "\$(ls -A /opt/CTFd 2>/dev/null)" ]; do
-        echo -ne "/opt/CTFd not ready yet... checking again in 10s...\r"
+        echo -ne "Waiting for /opt/CTFd to be ready.....\r"
         sleep 10
     done
 EOF
+sleep 15 # some extra time for git pull to finish
 echo -e "\nVM setup finished!"
 
 # Add CTFd Theme
@@ -109,7 +104,7 @@ ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER 
 #scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/ucl-core $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 scp -i "$SSH_PRIVATE_KEY" -r CTFd/themes/porticoHack $SSH_USER@$CTFD_IP:/opt/CTFd/CTFd/themes/
 
-# UNTESTED: make an if statement checking if secrets/privkey.pem and secrets/fullchain.pem already exist so it doesnt have to be commented manually
+# If secrets/privkey.pem and secrets/fullchain.pem already exist, skip certificate creation
 if [ -f "secrets/privkey.pem" ] && [ -f "secrets/fullchain.pem" ]; then
     echo "SSL certificates exist. Copying to VM..."
     ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/conf/nginx/"
@@ -130,30 +125,6 @@ EOF
     scp -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/privkey.pem secrets/privkey.pem
     scp -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/fullchain.pem secrets/fullchain.pem
 fi
-
-# Generate SSL certificate (if files dont exist)
-#echo "Generating SSL certificate..."
-#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /etc/letsencrypt/"
-#scp -i "$SSH_PRIVATE_KEY" secrets/cloudflare.ini $SSH_USER@$CTFD_IP:/etc/letsencrypt/cloudflare.ini
-#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP <<EOF
-#    sudo mkdir -p /etc/letsencrypt
-#    sudo mkdir -p /var/lib/letsencrypt
-
-#    sudo certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d $CTFD_SUBDOMAIN.$DOMAIN --email $EMAIL --agree-tos
-#    sudo cp /etc/letsencrypt/live/$CTFD_SUBDOMAIN.$DOMAIN/fullchain.pem /opt/CTFd/conf/nginx/fullchain.pem
-#    sudo cp /etc/letsencrypt/live/$CTFD_SUBDOMAIN.$DOMAIN/privkey.pem /opt/CTFd/conf/nginx/privkey.pem
-
-#    # Change permission to copy over to local machine
-#    sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/conf/nginx/
-#EOF
-#scp -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/privkey.pem secrets/privkey.pem
-#scp -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/fullchain.pem secrets/fullchain.pem
-
-# Move SSL certificate to VM (if files already exist)
-#echo "Copying certificate to VM..."
-#ssh -i "$SSH_PRIVATE_KEY" $SSH_USER@$CTFD_IP "sudo chown -R $SSH_USER:$SSH_USER /opt/CTFd/conf/nginx/"
-#scp -i "$SSH_PRIVATE_KEY" secrets/privkey.pem $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/privkey.pem 
-#scp -i "$SSH_PRIVATE_KEY" secrets/fullchain.pem $SSH_USER@$CTFD_IP:/opt/CTFd/conf/nginx/fullchain.pem
 
 # Update http.conf
 echo "Updating http.conf file..."

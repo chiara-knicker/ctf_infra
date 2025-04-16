@@ -25,10 +25,10 @@ echo "Shutting down CTFd infrastructure..."
 
 PROVIDER=$1
 
-# Check if cloud provider is provided
+# Check if cloud provider name is provided
 if [ -z "$PROVIDER" ]; then
-  echo "Using default provider: oracle."
-  PROVIDER="oracle"
+  echo "Usage: ./end_ctfd.sh <provider>"
+  exit 1
 fi
 
 cd "terraform/ctfd/$PROVIDER"
