@@ -36,18 +36,17 @@ ctf-infra/
 │   │   │   |    ├── challenge.yaml # Kubernetes deployment file
 │   │   │   |    ├── ...            # Challenge files
 ├── CTFd/
-│   ├── pages/                    # HTML for custom pages for CTFd
+│   ├── pages/                    # HTML for custom pages on CTFd
 │   ├── server_config/            # Files for CTFd network configs
 │   │   ├── docker-compose.yml
 │   │   ├── http.conf
 │   ├── themes/                   # Custom CTFd themes
-├── secrets/
-│   ├── ...                       # Files with sensitive data used for authentication
+├── secrets/                      # Files with sensitive data used for authentication
 │── terraform/                  
 │   ├── ctfd/                     # Terraform setup for CTFd
 │   │   ├── provider/                
 │   │   │   ├── scripts/
-│   │   │   |   ├── ctfd-init.sh # Initialization script for VM
+│   │   │   |   ├── ctfd-init.sh  # Initialization script for VM
 │   │   │   ├── dns.tf            # DNS configuration
 │   │   │   ├── main.tf           # Main Terraform configuration
 │   │   │   ├── output.tf         # Terraform outputs
@@ -84,7 +83,7 @@ ctf-infra/
 ## Clone the Repository
 
 ```
-git clone https://github.com/[TODO]
+git clone https://github.com/chiara-knicker/ctf_infra.git
 cd ctf-infra
 ```
 
