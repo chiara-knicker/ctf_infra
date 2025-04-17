@@ -134,7 +134,7 @@ If you already have an SSL certificate, add ```fullchain.pem``` and ```privkey.p
 
 ## Start CTFd
 
-To start CTFd, run the ```start_ctfd.sh``` script (make sure to uncomment the SSL certificate creation part if you do not have a certificate already).
+To start CTFd, run the ```start_ctfd.sh``` script.
 
 **Note: This script may take a few minutes.**
 
